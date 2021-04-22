@@ -1,109 +1,113 @@
+import { FilterQuery } from 'mongoose';
 import UserModel from '../models/User';
 import { IUser } from '../types/user';
 import BcryptService from './bcrypt';
 
 export default class UserService {
-  /* CREATE NEW USER */
-  static async create(data: IUser) {
-    const { email, phone } = data;
+	/* CREATE NEW USER */
+	static async create(data: IUser) {
+		const { email, phone } = data;
 
-    // check if user already exists
-    const existingUser = await UserModel.findOne({
-      $or: [{ email }, { phone }],
-      deleted: false,
-    });
+		// check if user already exists
+		const existingUser = await UserModel.findOne({
+			$or: [{ email }, { phone }],
+			deleted: false,
+		});
 
-    if (existingUser) {
-      throw new Error('Email or phone number already in use');
-    }
+		if (existingUser) {
+			throw new Error('Email or phone number already in use');
+		}
 
-    const newUser = new UserModel(data);
-    await newUser.save();
-    return newUser;
-  }
+		const newUser = new UserModel(data);
+		await newUser.save();
+		return newUser;
+	}
 
-  /* LOGIN USER */
-  static async login(email: string, password: string) {
-    const user = await UserModel.findOne({
-      email,
-      isVerified: true,
-      deleted: false,
-    });
+	/* LOGIN USER */
+	static async login(email: string, password: string) {
+		const user = await UserModel.findOne({
+			email,
+			isVerified: true,
+			deleted: false,
+		});
 
-    if (!user) {
-      return null;
-    }
+		if (!user) {
+			return null;
+		}
 
-    const passwordMatch = BcryptService.comparePassword(
-      password,
-      user.password,
-    );
+		const passwordMatch = BcryptService.comparePassword(
+			password,
+			user.password
+		);
 
-    if (!passwordMatch) {
-      return null;
-    }
+		if (!passwordMatch) {
+			return null;
+		}
 
-    return user;
-  }
+		return user;
+	}
 
-  /* CHANGE PASSWORD */
-  static async changePassword(
-    email: string,
-    oldPassword: string,
-    newPassword: string,
-  ) {
-    const user = await UserModel.findOne({
-      email,
-      isVerified: true,
-      deleted: false,
-    });
+	/* CHANGE PASSWORD */
+	static async changePassword(
+		email: string,
+		oldPassword: string,
+		newPassword: string
+	) {
+		const user = await UserModel.findOne({
+			email,
+			isVerified: true,
+			deleted: false,
+		});
 
-    if (!user) {
-      return null;
-    }
+		if (!user) {
+			return null;
+		}
 
-    const passwordMatch = BcryptService.comparePassword(
-      oldPassword,
-      user.password,
-    );
+		const passwordMatch = BcryptService.comparePassword(
+			oldPassword,
+			user.password
+		);
 
-    if (!passwordMatch) {
-      return null;
-    }
+		if (!passwordMatch) {
+			return null;
+		}
 
-    user.password = newPassword;
-    await user.save();
-    return user;
-  }
+		user.password = newPassword;
+		await user.save();
+		return user;
+	}
 
-  /* GET SINGLE USER */
-  static async getUser(data: Partial<IUser>) {
-    return UserModel.findOne({ deleted: false, ...data });
-  }
+	/* GET SINGLE USER */
+	static async getUser(data: Partial<IUser>) {
+		return UserModel.findOne({
+			deleted: false,
+			...data,
+		} as FilterQuery<IUser>);
+	}
 
-  /* GET ALL USERS */
-  static async getUsers(data: {}) {
-    return UserModel.find({ deleted: false, ...data }).sort({ createdAt: -1 });
-  }
+	/* GET ALL USERS */
+	static async getUsers(data: {}) {
+		return UserModel.find({ deleted: false, ...data }).sort({ createdAt: -1 });
+	}
 
-  static async updateUser({ id, ...data }: Partial<IUser>) {
-    const user = await UserModel.findByIdAndUpdate(
-      id,
-      {
-        $set: {
-          ...data,
-        },
-      },
-      { new: true },
-    );
-    return user;
-  }
+	static async updateUser({ id, ...data }: Partial<IUser>) {
+		const user = await UserModel.findByIdAndUpdate(
+			id,
+			{
+				$set: {
+					...data,
+				},
+			},
+			{ new: true }
+		);
+		return user;
+	}
 
-  static async queryUser(query: { [key: string]: any }) {
-    const user = await UserModel.find({
-      ...query,
-      deleted: false,
-    }).countDocuments();
-    return user;
-  }
+	static async queryUser(query: { [key: string]: any }) {
+		const user = await UserModel.find({
+			...query,
+			deleted: false,
+		}).countDocuments();
+		return user;
+	}
 }

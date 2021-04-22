@@ -6,8 +6,6 @@ import { confirmTrackingId } from '../mailtemplates/trackingId';
 import { otpMail } from '../mailtemplates/OTP';
 import { forgotPasswordMail } from '../mailtemplates/forgotpassword';
 import { adminLoginDetailsMail } from '../mailtemplates/adminLoginDetails';
-import { contributionAlertMail } from '../mailtemplates/contributionAlert';
-import { ITransaction, CurrencyEnumType } from '../types/transaction';
 
 const sender = config.SENDGRID_AUTHENTICATED_SENDER_EMAIL;
 
@@ -85,28 +83,6 @@ export default class EmailService {
       html: `<p>Hi ${contributor.firstName}</p> <p>${user.firstName} has been notified of your contribution</p>`,
     };
 
-    // create mail and send to the user
-    return sendMail(msg);
-  }
-
-  public static async contributionAlert(transaction: ITransaction) {
-    const user = transaction.registry.user as IUser;
-    const currency = CurrencyEnumType[transaction.location];
-    // create mail template
-    const msg = {
-      to: user.email, // Change to your recipient
-      from: sender, // Change to your verified sender
-      subject: 'Contribution Alert',
-      html: contributionAlertMail({
-        name: `${user.firstName || 'There'}`,
-        contributor: `${transaction.userData.firstName} ${
-          transaction.userData.lastName || ''
-        }`,
-        balance: transaction.registry.amount,
-        currency,
-        amount: transaction.amount,
-      }),
-    };
     // create mail and send to the user
     return sendMail(msg);
   }

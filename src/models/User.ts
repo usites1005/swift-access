@@ -54,11 +54,11 @@ UserSchema.pre<IUser>('save', function (next) {
 /**
  * Methods
  */
-// UserSchema.methods = {
-//   toJSON() {
-//     const { password, _id, __v, ...rest } = this.toObject();
-//     return { ...rest, id: _id };
-//   },
-// };
+UserSchema.methods = {
+  toJSON() {
+    const { password, _id, __v, ...rest } = this.toObject() as IUser;
+    return { ...rest, id: _id };
+  },
+};
 
 export default model<IUser>('User', UserSchema);

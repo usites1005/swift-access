@@ -12,9 +12,6 @@ router.get('/', AuthMiddleware.adminOnlyAuth, adminController.getAdmins);
 // Get logged in admin
 router.get('/me', AuthMiddleware.storeAndAdminAuth, adminController.getMe);
 
-// GET-- all store associates
-router.get('/stores', AuthMiddleware.adminOnlyAuth, adminController.getStores);
-
 // POST-- create admin
 router.post(
   '/',

@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
+import { FilterQuery } from 'mongoose';
 import httpStatus from 'http-status';
 import UserService from '../services/user';
 import AdminService from '../services/admin';
@@ -64,7 +65,7 @@ export default class AuthController {
         user,
         reference: user,
         referenceModel: 'User',
-      } as IOTPCode);
+      } as FilterQuery<IOTPCode>);
       if (!codeFound) {
         throw new APIError({
           message: 'Invalid or expired OTP',
@@ -240,7 +241,7 @@ export default class AuthController {
         user: user._id,
         reference: user._id,
         referenceModel,
-      } as IOTPCode);
+      } as FilterQuery<IOTPCode>);
 
       if (!codeFound) {
         throw new APIError({

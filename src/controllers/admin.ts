@@ -17,15 +17,6 @@ export default class AdminController {
     }
   }
 
-  static async getStores(req: Request, res: Response, next: NextFunction) {
-    try {
-      const users = await AdminService.getStores(req);
-      res.json(sendResponse(httpStatus.OK, 'Users found', users));
-    } catch (err) {
-      next(err);
-    }
-  }
-
   static async getMe(req: IRequest, res: Response, next: NextFunction) {
     try {
       let _id = req.sub;

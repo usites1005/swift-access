@@ -1,8 +1,8 @@
+import { FilterQuery } from 'mongoose';
 import { Request } from 'express';
 import AdminModel from '../models/Admin';
 import { IAdmin } from '../types/admin';
 import BcryptService from './bcrypt';
-import { _FilterQuery, FilterQuery, Query } from 'mongoose';
 
 export default class ADMINService {
   /* CREATE NEW ADMIN */
@@ -76,13 +76,13 @@ export default class ADMINService {
 
   /* GET SINGLE ADMIN */
   static async getAdmin(data: Partial<IAdmin>) {
-    return AdminModel.findOne({ deleted: false, ...data });
+    return AdminModel.findOne({ deleted: false, ...data } as FilterQuery<IAdmin>);
   }
 
   /* GET ALL ADMINS */
   static async getAdmins(req: Request) {
     const data: Partial<IAdmin> = req.body;
-    return AdminModel.find({ deleted: false, ...data }).sort({ createdAt: -1 });
+    return AdminModel.find({ deleted: false, ...data } as FilterQuery<IAdmin>).sort({ createdAt: -1 });
   }
 
   static async updateAdmin({ id, ...data }: Partial<IAdmin>) {

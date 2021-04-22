@@ -2,7 +2,7 @@ import { model, Schema, Types } from 'mongoose';
 import bcrypt from 'bcryptjs';
 import { enumToArray, IAdmin, LocationEnumType } from '../types/admin';
 
-const AdminSchema = new Schema(
+const AdminSchema: Schema = new Schema(
   {
     firstName: { type: String, trim: true },
     lastName: { type: String, trim: true },
