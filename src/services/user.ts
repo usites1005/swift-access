@@ -6,16 +6,16 @@ import BcryptService from './bcrypt';
 export default class UserService {
 	/* CREATE NEW USER */
 	static async create(data: IUser) {
-		const { email, phone } = data;
+		const { email, username } = data;
 
 		// check if user already exists
 		const existingUser = await UserModel.findOne({
-			$or: [{ email }, { phone }],
+			$or: [{ email }, { username }],
 			deleted: false,
 		});
 
 		if (existingUser) {
-			throw new Error('Email or phone number already in use');
+			throw new Error('Email or username is already in use');
 		}
 
 		const newUser = new UserModel(data);

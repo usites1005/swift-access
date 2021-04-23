@@ -41,7 +41,6 @@ export default class AdminController {
       const newUser = await AdminService.create({
         ...data,
         password,
-        location: admin?.location,
         createdBy: admin,
       });
 
@@ -68,13 +67,13 @@ export default class AdminController {
       const adminRole = req.user?.role;
       let { isSuper, role, ...body } = req.body;
       // check that phone number is never taken
-      const phoneTaken = await AdminService.getAdmin({ phone: body.phone });
-      if (phoneTaken) {
-        throw new APIError({
-          message: `Phone number is in use by another user`,
-          status: httpStatus.BAD_REQUEST,
-        });
-      }
+      // const phoneTaken = await AdminService.getAdmin({ phone: body.phone });
+      // if (phoneTaken) {
+      //   throw new APIError({
+      //     message: `Phone number is in use by another user`,
+      //     status: httpStatus.BAD_REQUEST,
+      //   });
+      // }
       let admin;
       if (isSuperAdmin) {
         admin = await AdminService.updateAdmin({ ...req.body, id });
@@ -85,7 +84,7 @@ export default class AdminController {
             status: httpStatus.UNAUTHORIZED,
           });
         }
-        if (req.user?.phone) delete body.phone;
+        // if (req.user?.phone) delete body.phone;
         admin = await AdminService.updateAdmin({ ...body, id });
       }
       if (!admin) {

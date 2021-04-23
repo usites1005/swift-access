@@ -14,7 +14,7 @@ router.post(
 );
 
 // GET-- all users
-router.get('/', AuthMiddleware.adminOnlyAuth, userController.getUsers);
+router.get('/' /*, AuthMiddleware.adminOnlyAuth */, userController.getUsers);
 
 // get logged in user
 router

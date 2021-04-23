@@ -7,16 +7,16 @@ import BcryptService from './bcrypt';
 export default class ADMINService {
   /* CREATE NEW ADMIN */
   static async create(data: IAdmin) {
-    const { email } = data;
+    const { email, username } = data;
 
     // check if user already exists
     const existingUser = await AdminModel.findOne({
-      $or: [{ email }],
+			$or: [{ email }, { username }],
       deleted: false,
     });
 
     if (existingUser) {
-      throw new Error('Email or phone number already in use');
+      throw new Error('Email or username is already in use');
     }
 
     const newUser = new AdminModel(data);

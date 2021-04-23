@@ -13,7 +13,6 @@ class AnalyticsController {
       let queryTimeline = new QueryBuilder(req.query as IQuery).parseTimeline();
       const userCount = await UserService.queryUser({
         createdAt: queryTimeline.query!,
-        location: req.user?.location,
       });
       res.json(
         sendResponse(httpStatus.OK, 'Success', {
