@@ -112,16 +112,10 @@ export default class AuthController {
 	}
 
 	static async login(req: Request, res: Response, next: NextFunction) {
-		const userType = req.params.type;
 		try {
 			const { email, password } = req.body;
-			let user;
-			if (userType === 'user') {
-				user = await UserService.login(email, password);
-			}
-			if (userType === 'admin') {
-				user = await AdminService.login(email, password);
-			}
+
+			const user = await UserService.login(email, password);
 
 			if (!user) {
 				throw new APIError({
@@ -129,6 +123,7 @@ export default class AuthController {
 					status: 400,
 				});
 			}
+			// todo resend verification mail if the user has not been verified and return a message to notify them
 			const token = TokenService.generateToken(
 				{ email, id: user.id, isVerified: user.isVerified },
 				loginSecret,

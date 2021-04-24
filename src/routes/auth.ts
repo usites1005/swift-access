@@ -18,7 +18,7 @@ router.post(
 );
 
 router.post(
-  '/login/:type',
+  '/login',
   celebrate(login, { abortEarly: false }),
   AuthController.login,
 );

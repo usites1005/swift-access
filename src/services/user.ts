@@ -16,8 +16,10 @@ export default class UserService {
 
 		if (existingUser) {
 			throw new Error('Email or username is already in use');
-		}
-
+    }
+    // todo move this hash to the user model file
+		const hashAnswer = BcryptService.hashPassword(data.sAnswer);
+		data.sAnswer = hashAnswer;
 		const newUser = new UserModel(data);
 
 		await newUser.save();
@@ -39,7 +41,7 @@ export default class UserService {
 		const passwordMatch = BcryptService.comparePassword(
 			password,
 			user.password
-		);
+    );    
 
 		if (!passwordMatch) {
 			return null;

@@ -34,29 +34,25 @@ const UserSchema = new Schema(
  * - validations
  * - virtuals
  */
-UserSchema.pre<IUser>('save', async function (next) {
-	// 	/**
-	// 	 * Ensures the password is hashed before save
-	// 	 */
-	if (!this.isModified('password') && !this.isModified('sAnswer')) {
-		return next();
-	} else if (this.isModified('password') && !this.isModified('sAnswer')) {
-		bcrypt.hash(this.password, 10, (err, hash) => {
-			if (err) {
-				return next(err);
-			}
-			this.password = hash;
+UserSchema.pre<IUser>('save', function (next) {
+	var user = this;
+
+	// only hash the password if it has been modified (or is new)
+	if (!user.isModified('password')) return next();
+
+	// generate a salt
+	bcrypt.genSalt(10, function (err, salt) {
+		if (err) return next(err);
+
+		// hash the password using our new salt
+		bcrypt.hash(user.password, salt, function (err, hash) {
+			if (err) return next(err);
+
+			// override the cleartext password with the hashed one
+			user.password = hash;
 			next();
 		});
-	} else if (!this.isModified('password') && this.isModified('sAnswer')) {
-		bcrypt.hash(this.sAnswer, 10, (err, hash) => {
-			if (err) {
-				return next(err);
-			}
-			this.sAnswer = hash;
-			next();
-		});
-	}
+	});
 });
 
 /**
@@ -67,6 +63,12 @@ UserSchema.methods = {
 		const { sAnswer, password, _id, __v, ...rest } = this.toObject() as IUser;
 		return { ...rest, id: _id };
 	},
+	// comparePassword (candidatePassword, cb) {
+	// 	bcrypt.compare(candidatePassword, this.password, function (err, isMatch) {
+	// 		if (err) return cb(err);
+	// 		cb(null, isMatch);
+	// 	});
+	// },
 };
 
 export default model<IUser>('User', UserSchema);
