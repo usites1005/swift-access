@@ -20,11 +20,7 @@ const UserSchema = new Schema(
 		password: { type: String, required: true },
 		// phone: { type: String, required: true },
 		imageURL: { type: String, default: '' },
-		// location: {
-		// 	type: String,
-		// 	enum: enumToArray(LocationEnumType),
-		// 	required: true,
-		// },
+
 		isVerified: { type: Boolean, default: false },
 		deleted: { type: Boolean, default: false },
 		deletedAt: { type: Date },
@@ -38,15 +34,13 @@ const UserSchema = new Schema(
  * - validations
  * - virtuals
  */
-UserSchema.pre<IUser>('save', function (next) {
-	/**
-	 * Ensures the password is hashed before save
-	 */
+UserSchema.pre<IUser>('save', async function (next) {
+	// 	/**
+	// 	 * Ensures the password is hashed before save
+	// 	 */
 	if (!this.isModified('password') && !this.isModified('sAnswer')) {
 		return next();
-	}
-
-	if (this.isModified('password') && !this.isModified('sAnswer')) {
+	} else if (this.isModified('password') && !this.isModified('sAnswer')) {
 		bcrypt.hash(this.password, 10, (err, hash) => {
 			if (err) {
 				return next(err);
@@ -54,9 +48,7 @@ UserSchema.pre<IUser>('save', function (next) {
 			this.password = hash;
 			next();
 		});
-	}
-
-	if (!this.isModified('password') && this.isModified('sAnswer')) {
+	} else if (!this.isModified('password') && this.isModified('sAnswer')) {
 		bcrypt.hash(this.sAnswer, 10, (err, hash) => {
 			if (err) {
 				return next(err);

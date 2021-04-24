@@ -26,7 +26,7 @@ const OTPCodeSchema = new Schema(
 OTPCodeSchema.index({ createdAt: 1 }, { expires: '1d' });
 
 /* always attach populate to save method */
-OTPCodeSchema.post<IOTPCode>('save', function (doc, next) {
+OTPCodeSchema.post<IOTPCode>('save', async function (doc, next) {
   doc
     .populate('user')
     .execPopulate()

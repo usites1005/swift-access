@@ -19,6 +19,7 @@ export default class UserService {
 		}
 
 		const newUser = new UserModel(data);
+
 		await newUser.save();
 		return newUser;
 	}
