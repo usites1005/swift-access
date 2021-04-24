@@ -1,7 +1,7 @@
-export const otpMail = (data: {
-  name: string;
-  message: string;
-  otp: string;
+export const verificationMail = (data: {
+	name: string;
+	message: string;
+	verificationLink: string;
 }) => `
 <html>
 
@@ -115,7 +115,8 @@ export const otpMail = (data: {
       <div class="mail-brief" style="width: 80%; margin: auto;">
         <p style="font-size: 25px;">Hello ${data.name},</p>
         <p style="line-height: 20px; font-size: 13px;">${data.message}</p>
-        <p style="margin-bottom: 30px; line-height: 20px; font-size: 13px;">Your OTP code is: <strong>${data.otp}</strong></p>
+        <p style="line-height: 20px; font-size: 13px;">Click on the link below to verify your account. The link expires in 15 minutes.</p>
+        <p style="margin-bottom: 30px; line-height: 20px; font-size: 13px;">Your OTP code is: <strong>${data.verificationLink}</strong></p>
         
         <br />
       </div>

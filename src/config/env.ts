@@ -6,9 +6,12 @@ const envVars = JSON.parse(JSON.stringify(process.env));
 export default {
   env: envVars.NODE_ENV,
   port: envVars.PORT,
-  jwtSecret: envVars.JWT_SECRET,
-  emailSecret: envVars.EMAIL_SECRET,
-  jwtExpiresIn: envVars.JWT_EXPIRES_IN,
+  // jwtSecret: envVars.JWT_SECRET,
+  loginSecret: envVars.LOGIN_JWT_TOKEN_SECRET,
+  verificationSecret: envVars.VERIFICATION_JWT_TOKEN_SECRET,
+  // jwtExpiresIn: envVars.JWT_EXPIRES_IN,
+  loginExpiresIn: envVars.LOGIN_JWT_EXPIRES_IN,
+  verificationExpiresIn: envVars.VERIFICATION_JWT_EXPIRES_IN,
   MONGODB:
     envVars.NODE_ENV === 'test'
       ? envVars.MONGODB_TEST

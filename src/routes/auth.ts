@@ -44,12 +44,12 @@ router.post(
 router.post(
   '/password/change/admin',
   [
-    AuthMiddleware.storeAndAdminAuth,
+    AuthMiddleware.superAdminAuth,
     celebrate(changePassword, { abortEarly: false }),
   ],
   AuthController.changePassword,
 );
 
-router.post('/resend-token/:id', AuthController.resendToken);
+// router.post('/resend-token/:id', AuthController.resendToken);
 
 export default router;

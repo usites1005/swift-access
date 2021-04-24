@@ -1,12 +1,10 @@
 import { Request, Response, NextFunction } from 'express';
 import httpStatus from 'http-status';
 import UserService from '../services/user';
-// import OTPCodeService from '../services/otpCode';
-// import { IOTPCode } from '../types/otpCode';
 import sendResponse from '../common/response';
 import APIError from '../common/APIError';
 import IRequest from '../types/expressTypes';
-// import EmailService from '../services/email';
+import EmailService from '../services/email';
 
 export default class UserController {
 	static async getUsers(req: IRequest, res: Response, next: NextFunction) {
@@ -27,17 +25,8 @@ export default class UserController {
 
 			const newUser = await UserService.create(data);
 
-			//  // create account verification for user
-			// const code = await OTPCodeService.create({
-			//   user: newUser,
-			//   reference: newUser._id,
-			//   referenceModel: 'User',
-			// } as IOTPCode);
-
-			// const message =
-			//   "You are getting this mail because you sign up for the Diapers Fund. Kindly ignore if you didn't.";
-
-			// EmailService.sendOTPMail(newUser, message, code);
+			// send account verification to user
+			EmailService.sendVerificationMail(newUser);
 
 			res.json(
 				sendResponse(httpStatus.CREATED, 'User created successfully', newUser)

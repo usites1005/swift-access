@@ -10,7 +10,7 @@ const router = express.Router();
 router.get('/', AuthMiddleware.adminOnlyAuth, adminController.getAdmins);
 
 // Get logged in admin
-router.get('/me', AuthMiddleware.storeAndAdminAuth, adminController.getMe);
+router.get('/me', AuthMiddleware.adminOnlyAuth, adminController.getMe);
 
 // POST-- create admin
 router.post(
@@ -28,7 +28,7 @@ router
   .put(
     [
       celebrate(validator.update, { abortEarly: false }),
-      AuthMiddleware.storeAndAdminAuth,
+      AuthMiddleware.adminOnlyAuth,
     ],
     adminController.updateAdmin,
   );

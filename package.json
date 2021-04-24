@@ -23,6 +23,7 @@
   "homepage": "https://github.com/Uniqcoda/cryptofx-backend#readme",
   "dependencies": {
     "@hapi/joi": "^17.1.1",
+    "@sendgrid/mail": "^7.4.2",
     "axios": "^0.21.1",
     "bcryptjs": "^2.4.3",
     "celebrate": "^14.0.0",

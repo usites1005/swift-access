@@ -12,7 +12,8 @@ export interface IAdmin extends Document {
 	role: string;
 	deleted: boolean;
 	isSuper: boolean;
-	createdAt: string;
+  isVerified: boolean;
+  createdAt: string;
 	updatedAt: string;
 	deletedAt: string;
 }
@@ -40,4 +41,17 @@ export function enumToArray(enumObject: any): string[] {
 		(key) => key
 	);
 	return keys;
+}
+
+export interface AdminPure {
+	id?: string;
+	fullName: string;
+	username: string;
+	email: string;
+	password: string;
+	imageURL: string;
+	role: string;
+	deleted: boolean;
+  isSuper: boolean;
+  isVerified: boolean;
 }

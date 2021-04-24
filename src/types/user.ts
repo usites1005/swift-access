@@ -24,3 +24,23 @@ export interface ILogin {
 	password: string;
 }
 export type UserType = string | IUser;
+
+export interface UserPure {
+  id?: string;
+	fullName: string;
+	username: string;
+	bitcoinA: string;
+	sQuestion: string;
+	sAnswer: string;
+	email: string;
+	password: string;
+	imageURL: string;
+	isVerified: boolean;
+}
+
+
+export interface IUserToken {
+  id: string;
+  email: string;
+  tokenFor: string;
+}

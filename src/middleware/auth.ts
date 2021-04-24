@@ -7,163 +7,150 @@ import httpStatus from 'http-status';
 import IRequest, { TAllUsers } from '../types/expressTypes';
 import UserService from '../services/user';
 import { IAllUsers } from '../types/admin';
+import config from '../config/env';
+
+const loginSecret = config.loginSecret;
 
 const getToken = (req: Request) => {
-  let tokenToVerify;
-  const authHeader = req.headers.authorization;
+	let tokenToVerify;
+	const authHeader = req.headers.authorization;
 
-  if (authHeader) {
-    const token = authHeader.split('Bearer ')[1];
+	if (authHeader) {
+		const token = authHeader.split('Bearer ')[1];
 
-    if (token) {
-      tokenToVerify = token;
-    } else {
-      throw new APIError({
-        message: 'Format for Authorization: Bearer [token]',
-        status: httpStatus.UNAUTHORIZED,
-      });
-    }
-  } else if (req.body.token) {
-    tokenToVerify = req.body.token;
-    delete req.query.token;
-  } else {
-    throw new APIError({
-      message: 'Unauthorized User',
-      status: httpStatus.UNAUTHORIZED,
-    });
-  }
-  return tokenToVerify;
+		if (token) {
+			tokenToVerify = token;
+		} else {
+			throw new APIError({
+				message: 'Format for Authorization: Bearer [token]',
+				status: httpStatus.UNAUTHORIZED,
+			});
+		}
+	} else if (req.body.token) {
+		tokenToVerify = req.body.token;
+		delete req.query.token;
+	} else {
+		throw new APIError({
+			message: 'Unauthorized User',
+			status: httpStatus.UNAUTHORIZED,
+		});
+	}
+	return tokenToVerify;
 };
 
 export default class AuthMiddleware {
-  static async userAuth(req: IRequest, _res: Response, next: NextFunction) {
-    try {
-      const tokenToVerify = getToken(req);
+	static async userAuth(req: IRequest, _res: Response, next: NextFunction) {
+		try {
+			const tokenToVerify = getToken(req);
 
-      const verificationResponse = TokenService.verifyToken(tokenToVerify);
-      const id = verificationResponse.id;
-      const user = await UserModel.findById(id);
-      if (user) {
-        req.user = user as TAllUsers;
-        req.sub = id;
-      } else {
-        throw new APIError({
-          message: 'Unauthorized user',
-          status: httpStatus.UNAUTHORIZED,
-        });
-      }
-      next();
-    } catch (error) {
-      next(error);
-    }
-  }
+			const verificationResponse = TokenService.verifyToken(
+				tokenToVerify,
+				loginSecret
+			);
+			const id = verificationResponse.id;
+			const user = await UserModel.findById(id);
+			if (user) {
+				req.user = user as TAllUsers;
+				req.sub = id;
+			} else {
+				throw new APIError({
+					message: 'Unauthorized user',
+					status: httpStatus.UNAUTHORIZED,
+				});
+			}
+			next();
+		} catch (error) {
+			next(error);
+		}
+	}
 
-  static async storeAndAdminAuth(
-    req: IRequest,
-    _res: Response,
-    next: NextFunction,
-  ) {
-    try {
-      const tokenToVerify = getToken(req);
+	static async adminOnlyAuth(
+		req: IRequest,
+		_res: Response,
+		next: NextFunction
+	) {
+		try {
+			const tokenToVerify = getToken(req);
 
-      const verificationResponse = TokenService.verifyToken(tokenToVerify);
-      const id = verificationResponse.id;
+			const verificationResponse = TokenService.verifyToken(
+				tokenToVerify,
+				loginSecret
+			);
+			const id = verificationResponse.id;
 
-      const user = await AdminModel.findById(id);
+			const user = await AdminModel.findById(id);
 
-      if (user && ['Admin', 'Store'].includes(user.role)) {
-        req.user = user as TAllUsers;
-        req.sub = id;
-      } else {
-        throw new APIError({
-          message: 'Unauthorized User',
-          status: httpStatus.UNAUTHORIZED,
-        });
-      }
-      next();
-    } catch (error) {
-      next(error);
-    }
-  }
+			if (user && user.role === 'Admin') {
+				req.user = user as TAllUsers;
+				req.sub = id;
+			} else {
+				throw new APIError({
+					message: 'Unauthorized user',
+					status: httpStatus.UNAUTHORIZED,
+				});
+			}
+			next();
+		} catch (error) {
+			next(error);
+		}
+	}
 
-  static async adminOnlyAuth(
-    req: IRequest,
-    _res: Response,
-    next: NextFunction,
-  ) {
-    try {
-      const tokenToVerify = getToken(req);
+	static async allUsers(req: IRequest, _res: Response, next: NextFunction) {
+		try {
+			const tokenToVerify = getToken(req);
 
-      const verificationResponse = TokenService.verifyToken(tokenToVerify);
-      const id = verificationResponse.id;
+			const verificationResponse = TokenService.verifyToken(
+				tokenToVerify,
+				loginSecret
+			);
+			const id = verificationResponse.id;
 
-      const user = await AdminModel.findById(id);
+			let user = await AdminModel.findById(id);
+			if (!user) user = (await UserService.getUser({ _id: id })) as IAllUsers;
 
-      if (user && user.role === 'Admin') {
-        req.user = user as TAllUsers;
-        req.sub = id;
-      } else {
-        throw new APIError({
-          message: 'Unauthorized user',
-          status: httpStatus.UNAUTHORIZED,
-        });
-      }
-      next();
-    } catch (error) {
-      next(error);
-    }
-  }
+			if (user) {
+				req.user = user as TAllUsers;
+				req.sub = id;
+			} else {
+				throw new APIError({
+					message: 'Unauthorized user',
+					status: httpStatus.UNAUTHORIZED,
+				});
+			}
+			next();
+		} catch (error) {
+			next(error);
+		}
+	}
 
-  static async allUsers(req: IRequest, _res: Response, next: NextFunction) {
-    try {
-      const tokenToVerify = getToken(req);
+	static async superAdminAuth(
+		req: IRequest,
+		_res: Response,
+		next: NextFunction
+	) {
+		try {
+			const tokenToVerify = getToken(req);
 
-      const verificationResponse = TokenService.verifyToken(tokenToVerify);
-      const id = verificationResponse.id;
+			const verificationResponse = TokenService.verifyToken(
+				tokenToVerify,
+				loginSecret
+			);
+			const id = verificationResponse.id;
 
-      let user = await AdminModel.findById(id);
-      if (!user) user = (await UserService.getUser({ _id: id })) as IAllUsers;
+			const user = await AdminModel.findById(id);
 
-      if (user) {
-        req.user = user as TAllUsers;
-        req.sub = id;
-      } else {
-        throw new APIError({
-          message: 'Unauthorized user',
-          status: httpStatus.UNAUTHORIZED,
-        });
-      }
-      next();
-    } catch (error) {
-      next(error);
-    }
-  }
-
-  static async superAdminAuth(
-    req: IRequest,
-    _res: Response,
-    next: NextFunction,
-  ) {
-    try {
-      const tokenToVerify = getToken(req);
-
-      const verificationResponse = TokenService.verifyToken(tokenToVerify);
-      const id = verificationResponse.id;
-
-      const user = await AdminModel.findById(id);
-
-      if (user && user.role === 'Admin' && user.isSuper) {
-        req.user = user as TAllUsers;
-        req.sub = id;
-      } else {
-        throw new APIError({
-          message: 'Unauthorized user',
-          status: httpStatus.UNAUTHORIZED,
-        });
-      }
-      next();
-    } catch (err) {
-      next(err);
-    }
-  }
+			if (user && user.role === 'Admin' && user.isSuper) {
+				req.user = user as TAllUsers;
+				req.sub = id;
+			} else {
+				throw new APIError({
+					message: 'Unauthorized user',
+					status: httpStatus.UNAUTHORIZED,
+				});
+			}
+			next();
+		} catch (err) {
+			next(err);
+		}
+	}
 }

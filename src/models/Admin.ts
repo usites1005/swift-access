@@ -17,7 +17,7 @@ const AdminSchema: Schema = new Schema(
 		// phone: { type: String },
 		imageURL: { type: String, default: '' },
 		role: { type: String, enum: ['Store', 'Admin'], default: 'Store' },
-
+		isVerified: { type: Boolean, default: false },
 		isSuper: { type: Boolean, default: false },
 		createdBy: { type: Types.ObjectId, ref: 'Admin' },
 		deleted: { type: Boolean, default: false },

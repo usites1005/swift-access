@@ -1,89 +1,106 @@
+import sgMail from '@sendgrid/mail';
+import { MailDataRequired } from '@sendgrid/helpers/classes/mail';
 import config from '../config/env';
-import { IUser } from '../types/user';
+import { IUser, UserPure } from '../types/user';
 import { IAdmin } from '../types/admin';
-import sendMail from '../middleware/mailer';
-import { confirmTrackingId } from '../mailtemplates/trackingId';
-import { otpMail } from '../mailtemplates/OTP';
-import { forgotPasswordMail } from '../mailtemplates/forgotpassword';
-import { adminLoginDetailsMail } from '../mailtemplates/adminLoginDetails';
+// import { confirmTrackingId } from '../mailTemplates/trackingId';
+import TokenService from '../services/token';
+import { TokenFor } from '../types/general';
+
+// import { forgotPasswordMail } from '../mailTemplates/forgotPassword';
+// import { adminLoginDetailsMail } from '../mailTemplates/adminLoginDetails';
 
 const sender = config.SENDGRID_AUTHENTICATED_SENDER_EMAIL;
+const verificationExpiresIn = config.verificationExpiresIn;
+const verificationSecret = config.verificationSecret;
 
+sgMail.setApiKey(config.SENDGRID_API_KEY);
+
+function generateMessageTemplate(
+	from: string,
+	to: string,
+	templateData: Record<string, unknown>,
+	templateId: string
+): MailDataRequired {
+	return {
+		from,
+		personalizations: [
+			{
+				to: [{ email: to }],
+				dynamicTemplateData: templateData,
+			},
+		],
+		templateId,
+	};
+}
+
+async function sendMail(msg: MailDataRequired) {
+	try {
+		await sgMail.send({
+			...msg,
+			mailSettings: {
+				sandboxMode: { enable: config.env === 'test' ? true : false },
+			},
+		});
+	} catch (error) {
+		console.log(error);
+		return error;
+	}
+}
 export default class EmailService {
 	public static async sendLoginDetails(user: IAdmin, password: string) {
-		// create mail template
-		const msg = {
-			to: user.email, // Change to your recipient
-			from: sender, // Change to your verified sender
-			subject: 'Login Details',
-			html: adminLoginDetailsMail({
-				name: `${user.fullName || 'There'}`,
-				password,
-			}),
-		};
-		// create mail and send to the user
-		return sendMail(msg);
+    console.log(user,password);
+    
+		// // create mail template
+		// const msg = {
+		// 	to: user.email, // Change to your recipient
+		// 	from: sender, // Change to your verified sender
+		// 	subject: 'Login Details',
+		// 	html: adminLoginDetailsMail({
+		// 		name: `${user.fullName || 'There'}`,
+		// 		password,
+		// 	}),
+		// };
+		// // create mail and send to the user
+		// return sendMail(msg);
 	}
 
 	public static async sendForgotPasswordMail(user: IUser, code: string) {
+    console.log(user, code);
+    
 		// create mail template
-
-		const msg = {
-			to: user.email, // Change to your recipient
-			from: sender, // Change to your verified sender
-			subject: 'Password Reset',
-			html: forgotPasswordMail({
-				name: `${user.fullName}`,
-				resetCode: code,
-			}),
-		};
-		// create mail and send to the user
-		return sendMail(msg);
+		// const msg = {
+		// 	to: user.email, // Change to your recipient
+		// 	from: sender, // Change to your verified sender
+		// 	subject: 'Password Reset',
+		// 	html: forgotPasswordMail({
+		// 		name: `${user.fullName}`,
+		// 		resetCode: code,
+		// 	}),
+		// };
+		// // create mail and send to the user
+		// return sendMail(msg);
 	}
 
-	public static async sendOTPMail(user: IUser, message: string, otp: string) {
-		// create mail template
+	public static async sendVerificationMail(user: UserPure) {
+		const token = TokenService.generateToken(
+			{ email: user.email, id: user.id, isVerified: user.isVerified },
+			verificationSecret,
+			verificationExpiresIn,
+			TokenFor.AccountVerification
+		);
 
-		const msg = {
-			to: user.email, // Change to your recipient
-			from: sender, // Change to your verified sender
-			subject: 'Bliss Group: Your OTP',
-			html: otpMail({
-				name: `${user.fullName}`,
-				message,
-				otp,
-			}),
-		};
-		// create mail and send to the user
-		return sendMail(msg);
-	}
-
-	public static async sendOrderConfirmedMail(user: IUser, trackingId: string) {
-		const msg = {
-			to: user.email, // Change to your recipient
-			from: sender, // Change to your verified sender
-			subject: 'Order Confirmed!',
-			html: confirmTrackingId(user.fullName, trackingId),
-		};
-		// create mail and send to the user
-		return sendMail(msg);
-	}
-
-	public static async confirmGiftDeliveryMail(
-		user: IUser & string,
-		contributor: IUser
-	) {
-		//const templateID = config.ORDER_CONFIRMED_MAIL_TEMPLATE_ID;
-		user;
-		// create mail template
-		const msg = {
-			to: contributor.email, // Change to your recipient
-			from: sender, // Change to your verified sender
-			subject: 'Gift Delevery',
-			html: `<p>Hi ${contributor.fullName}</p> <p>${user.fullName} has been notified of your contribution</p>`,
-		};
-
-		// create mail and send to the user
-		return sendMail(msg);
+		const msg = generateMessageTemplate(
+			sender,
+			user!.email,
+			{
+				name: user?.fullName,
+				verificationLink: `${config.frontEndUrl}/auth/verify?verificationToken=${token}`,
+				message:
+					"You are getting this mail because you signed up on CryptoFX. Kindly ignore if you didn't.",
+			},
+			config.VERIFY_EMAIL_TEMPLATE_ID
+		);
+		return await sendMail(msg);
 	}
 }
