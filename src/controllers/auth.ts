@@ -95,7 +95,7 @@ export default class AuthController {
 			user.save();
 
 			const newToken = TokenService.generateToken(
-				{ email, id: user.id, isVerified: user.isVerified },
+				{ ...user.toJSON() },
 				loginSecret,
 				loginExpiresIn,
 				TokenFor.Access
@@ -125,7 +125,7 @@ export default class AuthController {
 			}
 			// todo resend verification mail if the user has not been verified and return a message to notify them
 			const token = TokenService.generateToken(
-				{ email, id: user.id, isVerified: user.isVerified },
+				{ ...user.toJSON() },
 				loginSecret,
 				loginExpiresIn,
 				TokenFor.Access

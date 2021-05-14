@@ -84,7 +84,7 @@ export default class EmailService {
 
 	public static async sendVerificationMail(user: UserPure) {
 		const token = TokenService.generateToken(
-			{ email: user.email, id: user.id, isVerified: user.isVerified },
+			{ ...user },
 			verificationSecret,
 			verificationExpiresIn,
 			TokenFor.AccountVerification
@@ -97,7 +97,7 @@ export default class EmailService {
 				name: user?.fullName,
 				verificationLink: `${config.frontEndUrl}/auth/verify?verificationToken=${token}`,
 				message:
-					"You are getting this mail because you signed up on CryptoFX. Kindly ignore if you didn't.",
+					"You are getting this mail because you signed up on Swift Access Trade. Kindly ignore if you didn't.",
 			},
 			config.VERIFY_EMAIL_TEMPLATE_ID
 		);

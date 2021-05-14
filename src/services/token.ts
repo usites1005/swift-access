@@ -22,9 +22,7 @@ export default class TokenService {
 	) {
 		const token = jwt.sign(
 			{
-				id: user.id,
-				email: user.email,
-				isVerified: user.isVerified,
+				...user,
 				tokenFor,
 			},
 			jwtSecret,
