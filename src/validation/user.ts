@@ -1,5 +1,4 @@
 import { Joi, Segments } from 'celebrate';
-// import { enumToArray, LocationEnumType } from '../types/admin';
 
 export const signup = {
 	[Segments.BODY]: Joi.object().keys({

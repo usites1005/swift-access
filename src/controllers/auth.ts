@@ -22,54 +22,34 @@ const loginSecret = config.loginSecret;
 const verificationSecret = config.verificationSecret;
 
 export default class AuthController {
-	// static async resendToken(req: Request, res: Response, next: NextFunction) {
-	// 	try {
-	// 		const { userId } = req.body;
-	// 		const tokenType = req.query.type as string;
-	// 		let message =
-	// 			'Kindly use this token complete your transaction on our page';
-	// 		let referenceModel = 'User';
-	// 		let user = await UserService.getUser({ _id: userId });
-	// 		if (!user) {
-	// 			throw new APIError({
-	// 				message: 'User not found',
-	// 				status: httpStatus.NOT_FOUND,
-	// 			});
-	// 		}
-	// 		let reference = user._id;
+	static async resendVerificationMail(req: Request, res: Response, next: NextFunction) {
+		try {
+			const { email } = req.body;
+			let user = await UserService.getUser({ email });
+			if (!user) {
+				throw new APIError({
+					message: 'User not found',
+					status: httpStatus.NOT_FOUND,
+				});
+			}
+			// send account verification to user
+			EmailService.sendVerificationMail(user);
 
-	// 		if (tokenType === 'verify') {
-	// 			message = 'Kindly use this token complete your verification';
-	// 		}
-	// 		if (tokenType === 'password') {
-	// 			message = 'Kindly use this token complete your password change';
-	// 		}
-	// 		await OTPCodeService.deleteUserOTP({ reference } as IOTPCode);
-	// 		// create account verification for user
-
-	// 		const code = await OTPCodeService.create({
-	// 			user: user._id,
-	// 			reference,
-	// 			referenceModel,
-	// 		} as IOTPCode);
-
-	// 		EmailService.sendVerificationMail(user, message, code);
-
-	// 		res
-	// 			.status(httpStatus.OK)
-	// 			.json(sendResponse(httpStatus.OK, 'Token sent', user));
-	// 	} catch (err) {
-	// 		next(err);
-	// 	}
-	// }
+			res
+				.status(httpStatus.OK)
+				.json(sendResponse(httpStatus.OK, 'Token sent', {}));
+		} catch (err) {
+			next(err);
+		}
+	}
 
 	static async verifyEmail(req: Request, res: Response, next: NextFunction) {
 		try {
 			const { token } = req.body;
-			const { email, tokenFor } = TokenService.verifyToken(
-				token,
-				verificationSecret
-			);
+
+			const userData = TokenService.verifyToken(token, verificationSecret);
+			const { user: verifiedUser, tokenFor } = userData;
+			console.log({ userData });
 
 			if (tokenFor !== TokenFor.AccountVerification) {
 				throw new APIError({
@@ -78,7 +58,9 @@ export default class AuthController {
 				});
 			}
 
-			const user = await UserModel.findOne({ email });
+			const user = await UserModel.findOne({ email: verifiedUser.email });
+			console.log({ user });
+
 			if (!user || user.deleted) {
 				throw new APIError({
 					message: 'Account does not exist',

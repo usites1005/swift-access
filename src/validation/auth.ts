@@ -26,6 +26,12 @@ export const forgotPassword = {
 	}),
 };
 
+export const resendVerificationMail = {
+	[Segments.BODY]: Joi.object().keys({
+		email: Joi.string().required(),
+	}),
+};
+
 export const resetPassword = {
 	[Segments.BODY]: Joi.object().keys({
 		email: Joi.string().required(),

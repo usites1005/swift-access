@@ -47,7 +47,7 @@ export default class AuthMiddleware {
 				tokenToVerify,
 				loginSecret
 			);
-			const id = verificationResponse.id;
+			const id = verificationResponse.user.id;
 			const user = await UserModel.findById(id);
 			if (user) {
 				req.user = user as TAllUsers;
@@ -75,7 +75,7 @@ export default class AuthMiddleware {
 				tokenToVerify,
 				loginSecret
 			);
-			const id = verificationResponse.id;
+			const id = verificationResponse.user.id;
 
 			const user = await AdminModel.findById(id);
 
@@ -101,7 +101,7 @@ export default class AuthMiddleware {
 				tokenToVerify,
 				loginSecret
 			);
-			const id = verificationResponse.id;
+			const id = verificationResponse.user.id;
 
 			let user = await AdminModel.findById(id);
 			if (!user) user = (await UserService.getUser({ _id: id })) as IAllUsers;
@@ -132,7 +132,7 @@ export default class AuthMiddleware {
 				tokenToVerify,
 				loginSecret
 			);
-			const id = verificationResponse.id;
+			const id = verificationResponse.user.id;
 
 			const user = await AdminModel.findById(id);
 

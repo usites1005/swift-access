@@ -1,55 +1,60 @@
 import express from 'express';
 import { celebrate } from 'celebrate';
 import {
-  login,
-  verifyAccount,
-  changePassword,
-  forgotPassword,
-  resetPassword,
+	login,
+	verifyAccount,
+	changePassword,
+	forgotPassword,
+	resetPassword,
+	resendVerificationMail,
 } from '../validation/auth';
 import AuthController from '../controllers/auth';
 import AuthMiddleware from '../middleware/auth';
 const router = express.Router();
 
 router.post(
-  '/verify',
-  celebrate(verifyAccount, { abortEarly: false }),
-  AuthController.verifyEmail,
+	'/verify',
+	celebrate(verifyAccount, { abortEarly: false }),
+	AuthController.verifyEmail
 );
 
 router.post(
-  '/login',
-  celebrate(login, { abortEarly: false }),
-  AuthController.login,
+	'/login',
+	celebrate(login, { abortEarly: false }),
+	AuthController.login
 );
 
 router.post(
-  '/password/forgot/:type',
-  celebrate(forgotPassword, { abortEarly: true }),
-  AuthController.forgotPassword,
+	'/password/forgot/:type',
+	celebrate(forgotPassword, { abortEarly: true }),
+	AuthController.forgotPassword
 );
 
 router.post(
-  '/password/reset/:type',
-  celebrate(resetPassword, { abortEarly: true }),
-  AuthController.resetPassword,
+	'/resendVerification',
+	celebrate(resendVerificationMail, { abortEarly: true }),
+	AuthController.resendVerificationMail
 );
 
 router.post(
-  '/password/change/user',
-  [AuthMiddleware.userAuth, celebrate(changePassword, { abortEarly: false })],
-  AuthController.changePassword,
+	'/password/reset/:type',
+	celebrate(resetPassword, { abortEarly: true }),
+	AuthController.resetPassword
 );
 
 router.post(
-  '/password/change/admin',
-  [
-    AuthMiddleware.superAdminAuth,
-    celebrate(changePassword, { abortEarly: false }),
-  ],
-  AuthController.changePassword,
+	'/password/change/user',
+	[AuthMiddleware.userAuth, celebrate(changePassword, { abortEarly: false })],
+	AuthController.changePassword
 );
 
-// router.post('/resend-token/:id', AuthController.resendToken);
+router.post(
+	'/password/change/admin',
+	[
+		AuthMiddleware.superAdminAuth,
+		celebrate(changePassword, { abortEarly: false }),
+	],
+	AuthController.changePassword
+);
 
 export default router;
