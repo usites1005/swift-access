@@ -51,7 +51,6 @@ export default class AuthMiddleware {
 			const user = await UserModel.findById(id);
 			if (user) {
 				req.user = user as TAllUsers;
-				req.sub = id;
 			} else {
 				throw new APIError({
 					message: 'Unauthorized user',
@@ -82,7 +81,6 @@ export default class AuthMiddleware {
 
 			if (user && user.role === 'Admin') {
 				req.user = user as TAllUsers;
-				req.sub = id;
 			} else {
 				throw new APIError({
 					message: 'Unauthorized user',
@@ -110,7 +108,6 @@ export default class AuthMiddleware {
 
 			if (user) {
 				req.user = user as TAllUsers;
-				req.sub = id;
 			} else {
 				throw new APIError({
 					message: 'Unauthorized user',
@@ -141,7 +138,6 @@ export default class AuthMiddleware {
 
 			if (user && user.role === 'Admin' && user.isSuper) {
 				req.user = user as TAllUsers;
-				req.sub = id;
 			} else {
 				throw new APIError({
 					message: 'Unauthorized user',

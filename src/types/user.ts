@@ -11,7 +11,7 @@ export interface IUser extends Document {
 	// phone: string;
 	password: string;
 	imageURL: string;
-	role?: string;
+	refBy: string;
 	isVerified: boolean;
 	deleted: boolean;
 	createdAt: string;
@@ -34,7 +34,8 @@ export interface UserPure {
 	sAnswer: string;
 	email: string;
 	password: string;
-	imageURL: string;
+  imageURL: string;
+	refBy: string;
 	isVerified: boolean;
 }
 

@@ -10,8 +10,7 @@ export const signup = {
 		sAnswer: Joi.string().required(),
 		email: Joi.string().email().required(),
 		password: Joi.string().required(),
-		// location: Joi.allow(...enumToArray(LocationEnumType)).required(),
-		// phone: Joi.string().required(),
+		refBy: Joi.string(),
 		imageURL: Joi.string(),
 	}),
 };

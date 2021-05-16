@@ -10,9 +10,20 @@ export default class UserController {
 	static async getUsers(req: IRequest, res: Response, next: NextFunction) {
 		try {
 			let data = req.query;
-			const users = req.user?.isSuper
-				? await UserService.getUsers({ ...data })
-				: await UserService.getUsers({ ...data });
+			const users = await UserService.getUsers({ ...data });
+			res.json(sendResponse(httpStatus.OK, 'Users found', users));
+		} catch (err) {
+			next(err);
+		}
+	}
+	static async getUserReferrals(
+		req: IRequest,
+		res: Response,
+		next: NextFunction
+	) {
+		try {
+			const { username } = req.user!;
+			const users = await UserService.getUsers({ refCode: username });
 			res.json(sendResponse(httpStatus.OK, 'Users found', users));
 		} catch (err) {
 			next(err);
@@ -40,14 +51,13 @@ export default class UserController {
 			);
 		}
 	}
+
 	static async getUser(req: IRequest, res: Response, next: NextFunction) {
 		try {
 			let _id = req.params.userId;
 			let data = req.query;
 
-			const user = req.user?.isSuper
-				? await UserService.getUser({ ...data, _id })
-				: await UserService.getUser({ ...data, _id });
+			const user = await UserService.getUser({ ...data, _id });
 			if (!user) {
 				throw new APIError({
 					message: 'User not found',
@@ -62,7 +72,7 @@ export default class UserController {
 
 	static async getMe(req: IRequest, res: Response, next: NextFunction) {
 		try {
-			let _id = req.sub;
+			let { _id } = req.user!;
 			const user = await UserService.getUser({ _id });
 			if (!user) {
 				throw new APIError({
@@ -78,8 +88,8 @@ export default class UserController {
 
 	static async updateUser(req: IRequest, res: Response, next: NextFunction) {
 		try {
-			let id = req.sub;
-			const user = await UserService.updateUser({ ...req.body, id });
+			let { _id } = req.user!;
+			const user = await UserService.updateUser({ ...req.body, _id });
 			if (!user) {
 				throw new APIError({
 					message: 'User not found',

@@ -20,7 +20,7 @@ const UserSchema = new Schema(
 		password: { type: String, required: true },
 		// phone: { type: String, required: true },
 		imageURL: { type: String, default: '' },
-
+		refBy: { type: String },
 		isVerified: { type: Boolean, default: false },
 		deleted: { type: Boolean, default: false },
 		deletedAt: { type: Date },
@@ -60,7 +60,14 @@ UserSchema.pre<IUser>('save', function (next) {
  */
 UserSchema.methods = {
 	toJSON() {
-		const { sAnswer, password, _id, __v, ...rest } = this.toObject() as IUser;
+		const {
+			sQuestion,
+			sAnswer,
+			password,
+			_id,
+			__v,
+			...rest
+		} = this.toObject() as IUser;
 		return { ...rest, id: _id };
 	},
 	// comparePassword (candidatePassword, cb) {

@@ -19,7 +19,7 @@ export default class AdminController {
 
   static async getMe(req: IRequest, res: Response, next: NextFunction) {
     try {
-      let _id = req.sub;
+      let _id = req.user?._id;
       const user = await AdminService.getAdmin({ _id });
       if (!user) {
         throw new APIError({
@@ -61,7 +61,7 @@ export default class AdminController {
   }
   static async updateAdmin(req: IRequest, res: Response, next: NextFunction) {
     try {
-      const adminId = req.sub;
+      const adminId = req.user?._id;
       const id = req.params.adminId;
       const isSuperAdmin = req.user?.isSuper;
       const adminRole = req.user?.role;

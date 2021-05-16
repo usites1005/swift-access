@@ -8,27 +8,34 @@ const router = express.Router();
 
 // POST-- user signUp.
 router.post(
-  '/',
-  celebrate(validator.signup, { abortEarly: false }),
-  userController.signUp,
+	'/',
+	celebrate(validator.signup, { abortEarly: false }),
+	userController.signUp
 );
 
 // GET-- all users
-router.get('/' /*, AuthMiddleware.adminOnlyAuth */, userController.getUsers);
+router.get('/', AuthMiddleware.adminOnlyAuth, userController.getUsers);
+
+// update logged in user
+router
+	.route('/me')
+	.put(
+		celebrate(validator.update, { abortEarly: false }),
+		AuthMiddleware.userAuth,
+		userController.updateUser
+	);
 
 // get logged in user
-router
-  .route('/me')
-  .get(AuthMiddleware.userAuth, userController.getMe)
-  .put(
-    celebrate(validator.update, { abortEarly: false }),
-    AuthMiddleware.userAuth,
-    userController.updateUser,
-  );
+router.route('/me').put(AuthMiddleware.userAuth, userController.getMe);
 
 // get user by id
 router
-  .route('/:userId')
-  .get(AuthMiddleware.adminOnlyAuth, userController.getUser);
+	.route('/:userId')
+	.get(AuthMiddleware.adminOnlyAuth, userController.getUser);
+
+// get user's referrals
+router
+	.route('/referrals')
+	.get(AuthMiddleware.userAuth, userController.getUserReferrals);
 
 export default router;

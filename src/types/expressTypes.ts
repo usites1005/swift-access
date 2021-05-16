@@ -6,7 +6,6 @@ export type TAllUsers = IAdmin & IUser;
 
 interface IRequest extends Request {
   user?: TAllUsers;
-  sub?: string;
 }
 
 export default IRequest;
