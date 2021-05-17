@@ -3,7 +3,7 @@ import httpStatus from 'http-status';
 import AdminService from '../services/admin';
 import sendResponse from '../common/response';
 import APIError from '../common/APIError';
-import EmailService from '../services/email';
+// import EmailService from '../services/email';
 import IRequest from '../types/expressTypes';
 import TokenService from '../services/token';
 
@@ -45,7 +45,7 @@ export default class AdminController {
       });
 
       // send mail with login details
-      EmailService.sendLoginDetails(newUser, password);
+      // EmailService.sendLoginDetails(newUser, password);
 
       res.json(
         sendResponse(httpStatus.CREATED, 'User created successfully', newUser),

@@ -22,7 +22,7 @@ export default class TokenService {
 	) {
 		const token = jwt.sign(
 			{
-				...user,
+				user,
 				tokenFor,
 			},
 			jwtSecret,

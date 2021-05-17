@@ -9,8 +9,8 @@ export const signup = {
 		sAnswer: Joi.string().required(),
 		email: Joi.string().email().required(),
 		password: Joi.string().required(),
-		refBy: Joi.string(),
-		imageURL: Joi.string(),
+		refBy: Joi.string().allow(null, ''),
+		imageURL: Joi.string().allow(null, ''),
 	}),
 };
 

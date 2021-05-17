@@ -1,4 +1,5 @@
 import { Document } from 'mongoose';
+import { TAllUsers } from './expressTypes';
 
 export interface IUser extends Document {
 	id: string;
@@ -41,7 +42,6 @@ export interface UserPure {
 
 
 export interface IUserToken {
-  id: string;
-  email: string;
+  user: TAllUsers;
   tokenFor: string;
 }

@@ -1,18 +1,12 @@
 import { Request, Response, NextFunction } from 'express';
-import { FilterQuery } from 'mongoose';
 import httpStatus from 'http-status';
 import UserService from '../services/user';
 import AdminService from '../services/admin';
 import TokenService from '../services/token';
-import AuthService from '../services/auth';
 import config from '../config/env';
 import sendResponse from '../common/response';
 import APIError from '../common/APIError';
-// import { IAdmin } from '../types/admin';
-// import { IUser } from '../types/user';
-import IRequest, { TAllUsers } from '../types/expressTypes';
-import OTPCodeService from '../services/otpCode';
-import { IOTPCode } from '../types/otpCode';
+import IRequest from '../types/expressTypes';
 import EmailService from '../services/email';
 import { TokenFor } from '../types/general';
 import UserModel from '../models/User';
@@ -22,7 +16,11 @@ const loginSecret = config.loginSecret;
 const verificationSecret = config.verificationSecret;
 
 export default class AuthController {
-	static async resendVerificationMail(req: Request, res: Response, next: NextFunction) {
+	static async resendVerificationMail(
+		req: Request,
+		res: Response,
+		next: NextFunction
+	) {
 		try {
 			const { email } = req.body;
 			let user = await UserService.getUser({ email });
@@ -33,7 +31,7 @@ export default class AuthController {
 				});
 			}
 			// send account verification to user
-			EmailService.sendVerificationMail(user);
+			EmailService.sendVerificationMail(user.toJSON());
 
 			res
 				.status(httpStatus.OK)
@@ -49,7 +47,6 @@ export default class AuthController {
 
 			const userData = TokenService.verifyToken(token, verificationSecret);
 			const { user: verifiedUser, tokenFor } = userData;
-			console.log({ userData });
 
 			if (tokenFor !== TokenFor.AccountVerification) {
 				throw new APIError({
@@ -59,7 +56,6 @@ export default class AuthController {
 			}
 
 			const user = await UserModel.findOne({ email: verifiedUser.email });
-			console.log({ user });
 
 			if (!user || user.deleted) {
 				throw new APIError({
@@ -75,9 +71,10 @@ export default class AuthController {
 			}
 			user.isVerified = true;
 			user.save();
+			const convertUser = user.toJSON();
 
 			const newToken = TokenService.generateToken(
-				{ ...user.toJSON() },
+				convertUser,
 				loginSecret,
 				loginExpiresIn,
 				TokenFor.Access
@@ -105,9 +102,18 @@ export default class AuthController {
 					status: 400,
 				});
 			}
-			// todo resend verification mail if the user has not been verified and return a message to notify them
+			if (!user.isVerified) {
+				// send account verification to user
+				EmailService.sendVerificationMail(user.toJSON());
+				throw new APIError({
+					message: 'Please verify your account with the email sent to you.',
+					status: 400,
+				});
+			}
+			const convertUser = user.toJSON();
+
 			const token = TokenService.generateToken(
-				{ ...user.toJSON() },
+				convertUser,
 				loginSecret,
 				loginExpiresIn,
 				TokenFor.Access
@@ -165,10 +171,9 @@ export default class AuthController {
 	}
 
 	static async forgotPassword(req: Request, res: Response, next: NextFunction) {
-		const userType = req.params.type;
 		const { email } = req.body;
 		try {
-			const user = (await AuthService.getUser(email, userType)) as TAllUsers;
+			const user = await UserService.getUser({ email });
 			if (!user) {
 				throw new APIError({
 					message: 'Invalid credentials',
@@ -176,7 +181,8 @@ export default class AuthController {
 				});
 			}
 
-			EmailService.sendVerificationMail(user);
+			// todo: change this to password reset mail
+			EmailService.sendVerificationMail(user.toJSON());
 
 			res.json(
 				sendResponse(httpStatus.OK, 'Password reset code sent', {}, null)
@@ -186,50 +192,29 @@ export default class AuthController {
 		}
 	}
 
-	static async resetPassword(req: IRequest, res: Response, next: NextFunction) {
-		const url = req.url.split('/');
-		const userType = url[url.length - 1];
-		const { email, resetCode, newPassword } = req.body;
+	static async resetPassword(req: Request, res: Response, next: NextFunction) {
+		const { email, resetToken, newPassword } = req.body;
 
 		try {
-			const user = (await AuthService.getUser(email, userType)) as TAllUsers;
+			const userData = TokenService.verifyToken(resetToken, verificationSecret);
 
-			if (!user) {
+			const { user: userToEdit, tokenFor } = userData;
+
+			if (email !== userToEdit.email) {
 				throw new APIError({
-					message: 'Invalid credentials',
+					message: 'Unauthorized User',
 					status: 400,
 				});
 			}
 
-			let referenceModel;
-			if (userType === 'user') {
-				referenceModel = 'User';
-			}
-			if (userType === 'admin') {
-				referenceModel = 'Admin';
-			}
-
-			const codeFound = await OTPCodeService.get({
-				code: resetCode,
-				user: user._id,
-				reference: user._id,
-				referenceModel,
-			} as FilterQuery<IOTPCode>);
-
-			if (!codeFound) {
+			if (tokenFor !== TokenFor.ResetPassword) {
 				throw new APIError({
-					message: 'Invalid or expired code',
+					message: 'Invalid or expired token',
 					status: 400,
 				});
 			}
-
-			const { user: userToEdit } = codeFound;
-
 			userToEdit.password = newPassword;
 			await userToEdit.save();
-
-			// delete OTP code
-			await OTPCodeService.delete(codeFound._id);
 
 			res.json(
 				sendResponse(httpStatus.OK, 'Password change successful', {}, null)

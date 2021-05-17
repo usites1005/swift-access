@@ -37,7 +37,7 @@ export default class UserController {
 			const newUser = await UserService.create(data);
 
 			// send account verification to user
-			EmailService.sendVerificationMail(newUser);
+			EmailService.sendVerificationMail(newUser.toJSON());
 
 			res.json(
 				sendResponse(httpStatus.CREATED, 'User created successfully', newUser)

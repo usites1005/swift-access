@@ -2,7 +2,6 @@ import sgMail from '@sendgrid/mail';
 import { MailDataRequired } from '@sendgrid/helpers/classes/mail';
 import config from '../config/env';
 import { IUser, UserPure } from '../types/user';
-import { IAdmin } from '../types/admin';
 // import { confirmTrackingId } from '../mailTemplates/trackingId';
 import TokenService from '../services/token';
 import { TokenFor } from '../types/general';
@@ -48,23 +47,6 @@ async function sendMail(msg: MailDataRequired) {
 	}
 }
 export default class EmailService {
-	public static async sendLoginDetails(user: IAdmin, password: string) {
-    console.log(user,password);
-    
-		// // create mail template
-		// const msg = {
-		// 	to: user.email, // Change to your recipient
-		// 	from: sender, // Change to your verified sender
-		// 	subject: 'Login Details',
-		// 	html: adminLoginDetailsMail({
-		// 		name: `${user.fullName || 'There'}`,
-		// 		password,
-		// 	}),
-		// };
-		// // create mail and send to the user
-		// return sendMail(msg);
-	}
-
 	public static async sendForgotPasswordMail(user: IUser, code: string) {
     console.log(user, code);
     
@@ -82,7 +64,7 @@ export default class EmailService {
 		// return sendMail(msg);
 	}
 
-	public static async sendVerificationMail(user: UserPure) {
+	public static async sendVerificationMail(user: UserPure) {    
 		const token = TokenService.generateToken(
 			{ ...user },
 			verificationSecret,
