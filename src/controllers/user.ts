@@ -23,7 +23,7 @@ export default class UserController {
 	) {
 		try {
 			const { username } = req.user!;
-			const users = await UserService.getUsers({ refCode: username });
+			const users = await UserService.getUsers({ refBy: username });
 			res.json(sendResponse(httpStatus.OK, 'Users found', users));
 		} catch (err) {
 			next(err);

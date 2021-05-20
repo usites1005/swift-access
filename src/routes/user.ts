@@ -13,9 +13,6 @@ router.post(
 	userController.signUp
 );
 
-// GET-- all users
-router.get('/', AuthMiddleware.adminOnlyAuth, userController.getUsers);
-
 // update logged in user
 router
 	.route('/me')
@@ -28,14 +25,14 @@ router
 // get logged in user
 router.route('/me').put(AuthMiddleware.userAuth, userController.getMe);
 
-// get user by id
-router
-	.route('/:userId')
-	.get(AuthMiddleware.adminOnlyAuth, userController.getUser);
-
 // get user's referrals
 router
 	.route('/referrals')
 	.get(AuthMiddleware.userAuth, userController.getUserReferrals);
+
+// get user by id
+router
+	.route('/:userId')
+	.get(AuthMiddleware.adminOnlyAuth, userController.getUser);
 
 export default router;
