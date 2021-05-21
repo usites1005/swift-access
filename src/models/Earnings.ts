@@ -1,7 +1,7 @@
 import { model, Schema, Types } from 'mongoose';
-import { IAccountHistory } from '../types/accountHistory';
+import { IEarnings } from '../types/earnings';
 
-const AccountHistorySchema = new Schema(
+const EarningsSchema = new Schema(
 	{
 		userId: { type: Types.ObjectId, ref: 'User', required: true },
 		type: { type: String, required: true },
@@ -11,4 +11,4 @@ const AccountHistorySchema = new Schema(
 	{ timestamps: true }
 );
 
-export default model<IAccountHistory>('AccountHistory', AccountHistorySchema);
+export default model<IEarnings>('Earnings', EarningsSchema);

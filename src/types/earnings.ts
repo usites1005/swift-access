@@ -1,6 +1,8 @@
+
+
 import { Document } from 'mongoose';
 
-export interface IAccountHistory extends Document {
+export interface IEarnings extends Document {
 	id: string;
 	userId: string;
 	type: string;
@@ -10,11 +12,10 @@ export interface IAccountHistory extends Document {
 	updatedAt: string;
 }
 
-export interface AccountHistoryPure {
+export interface EarningsPure {
   id?: string;
   userId: string;
 	type: string;
 	amount: number;
 	comment: string;
-	accountBalance: number;
 }
