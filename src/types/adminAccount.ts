@@ -1,6 +1,6 @@
 import { Document } from 'mongoose';
 
-export interface IACAddresses extends Document {
+export interface IAdminAccount extends Document {
 	id: string;
 	adminBTCAddress: string;
 	adminETHAddress: string;
@@ -9,7 +9,7 @@ export interface IACAddresses extends Document {
 	updatedAt: string;
 }
 
-export interface ACAddressesPure {
+export interface AdminAccountPure {
 	id?: string;
 	adminBTCAddress: string;
 	adminETHAddress: string;
