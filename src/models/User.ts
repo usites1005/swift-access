@@ -7,7 +7,9 @@ const UserSchema = new Schema(
 	{
 		fullName: { type: String, trim: true, required: true },
 		username: { type: String, trim: true, required: true, unique: true },
-		bitcoinA: { type: String, trim: true, required: true },
+		btcAddr: { type: String, trim: true, required: true },
+		ethAddr: { type: String, trim: true },
+		tronAddr: { type: String, trim: true },
 		sQuestion: { type: String, trim: true, required: true },
 		sAnswer: { type: String, trim: true, required: true },
 		email: {

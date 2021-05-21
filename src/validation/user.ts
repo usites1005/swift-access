@@ -4,7 +4,7 @@ export const signup = {
 	[Segments.BODY]: Joi.object().keys({
 		fullName: Joi.string().required(),
 		username: Joi.string().required(),
-		bitcoinA: Joi.string().required(),
+		btcAddr: Joi.string().required(),
 		sQuestion: Joi.string().required(),
 		sAnswer: Joi.string().required(),
 		email: Joi.string().email().required(),
