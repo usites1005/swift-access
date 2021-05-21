@@ -1,4 +1,4 @@
-import { model, Schema, Types } from 'mongoose';
+import { model, Schema } from 'mongoose';
 import bcrypt from 'bcryptjs';
 import { IAdmin } from '../types/admin';
 
@@ -14,12 +14,8 @@ const AdminSchema: Schema = new Schema(
 			required: true,
 		},
 		password: { type: String, required: true },
-		// phone: { type: String },
 		imageURL: { type: String, default: '' },
-		role: { type: String, enum: ['Store', 'Admin'], default: 'Store' },
-		isVerified: { type: Boolean, default: false },
 		isSuper: { type: Boolean, default: false },
-		createdBy: { type: Types.ObjectId, ref: 'Admin' },
 	},
 	{ timestamps: true }
 );
@@ -31,26 +27,23 @@ const AdminSchema: Schema = new Schema(
  * - virtuals
  */
 AdminSchema.pre<IAdmin>('save', async function (next) {
+  var admin = this;
+
 	/**
 	 * Ensures the password is hashed before save
 	 */
-	if (!this.isModified('password')) {
-		return next();
-	}
-	bcrypt.hash(this.password, 10, (err, hash) => {
-		if (err) {
-			return next(err);
-		}
-		this.password = hash;
-		next();
-	});
-});
+  if (!admin.isModified('password')) return next();
 
-AdminSchema.post<IAdmin>('save', function (doc, next) {
-	doc
-		.populate({ path: 'createdBy', select: '-password' })
-		.execPopulate()
-		.then(() => {
+	// generate a salt
+	bcrypt.genSalt(10, function (err, salt) {
+		if (err) return next(err);
+
+		// hash the password using our new salt
+		bcrypt.hash(admin.password, salt, function (err, hash) {
+			if (err) return next(err);
+
+			// override the cleartext password with the hashed one
+			admin.password = hash;
 			next();
 		});
 });

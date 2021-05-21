@@ -6,26 +6,12 @@ export interface IAdmin extends Document {
 	fullName: string;
 	username: string;
 	email: string;
-	// phone: string;
 	password: string;
 	imageURL: string;
-	role: string;
 	isSuper: boolean;
-  isVerified: boolean;
-  createdAt: string;
+	createdAt: string;
 	updatedAt: string;
 }
-
-export enum AdminEnumType {
-	STORE = 'Store',
-	ADMIN = 'Admin',
-}
-
-export enum LocationEnumType {
-	NIGERIA = 'Nigeria',
-	KENYA = 'Kenya',
-}
-
 export interface IAdminLogin {
 	email: string;
 	password: string;
@@ -41,7 +27,5 @@ export interface AdminPure {
 	email: string;
 	password: string;
 	imageURL: string;
-	role: string;
-  isSuper: boolean;
-  isVerified: boolean;
+	isSuper: boolean;
 }
