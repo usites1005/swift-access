@@ -4,7 +4,7 @@ import AdminModel from '../models/Admin';
 import UserModel from '../models/User';
 import APIError from '../common/APIError';
 import httpStatus from 'http-status';
-import IRequest, { TAllUsers } from '../types/expressTypes';
+import IRequest, { TAllUsers } from '../types/general';
 import UserService from '../services/user';
 import { IAllUsers } from '../types/admin';
 import config from '../config/env';

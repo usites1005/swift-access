@@ -1,5 +1,5 @@
 import { Document } from 'mongoose';
-import { TAllUsers } from './expressTypes';
+import { TAllUsers } from './general';
 
 export interface IUser extends Document {
 	id: string;
@@ -14,10 +14,8 @@ export interface IUser extends Document {
 	imageURL: string;
 	refBy: string;
 	isVerified: boolean;
-	deleted: boolean;
 	createdAt: string;
 	updatedAt: string;
-	deletedAt: string;
 }
 
 export interface ILogin {

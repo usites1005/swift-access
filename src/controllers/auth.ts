@@ -6,7 +6,7 @@ import TokenService from '../services/token';
 import config from '../config/env';
 import sendResponse from '../common/response';
 import APIError from '../common/APIError';
-import IRequest from '../types/expressTypes';
+import IRequest from '../types/general';
 import EmailService from '../services/email';
 import { TokenFor } from '../types/general';
 import UserModel from '../models/User';
@@ -57,7 +57,7 @@ export default class AuthController {
 
 			const user = await UserModel.findOne({ email: verifiedUser.email });
 
-			if (!user || user.deleted) {
+			if (!user) {
 				throw new APIError({
 					message: 'Account does not exist',
 					status: 401,

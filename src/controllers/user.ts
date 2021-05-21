@@ -3,7 +3,7 @@ import httpStatus from 'http-status';
 import UserService from '../services/user';
 import sendResponse from '../common/response';
 import APIError from '../common/APIError';
-import IRequest from '../types/expressTypes';
+import IRequest from '../types/general';
 import EmailService from '../services/email';
 
 export default class UserController {

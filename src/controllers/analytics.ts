@@ -3,7 +3,7 @@ import httpStatus from 'http-status';
 import QueryBuilder from '../common/querybuilder';
 import sendResponse from '../common/response';
 import UserService from '../services/user';
-import IRequest from '../types/expressTypes';
+import IRequest from '../types/general';
 import IQuery from '../types/queryTypes';
 
 class AnalyticsController {

@@ -1,8 +1,14 @@
 import { Request } from 'express';
+import { IAdmin } from './admin';
+import { IUser } from './user';
 
-export interface RequestContext {
-	req: Request;
+export type TAllUsers = IAdmin & IUser;
+
+interface IRequest extends Request {
+  user?: TAllUsers;
 }
+
+export default IRequest;
 
 export enum TokenFor {
 	// tokens for sending requests e.g token from login

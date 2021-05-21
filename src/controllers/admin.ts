@@ -4,7 +4,7 @@ import AdminService from '../services/admin';
 import sendResponse from '../common/response';
 import APIError from '../common/APIError';
 // import EmailService from '../services/email';
-import IRequest from '../types/expressTypes';
+import IRequest from '../types/general';
 import TokenService from '../services/token';
 
 export default class AdminController {

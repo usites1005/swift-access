@@ -1,5 +1,6 @@
 import { Joi, Segments } from 'celebrate';
-import { AdminEnumType, enumToArray } from '../types/admin';
+import { AdminEnumType } from '../types/admin';
+import { enumToArray } from '../types/general';
 
 export const create = {
 	[Segments.BODY]: Joi.object().keys({
