@@ -1,7 +1,8 @@
 import { Document } from 'mongoose';
 
-export interface ITransactionsHistory extends Document {
+export interface ITransactions extends Document {
 	id: string;
+	userId: string;
 	type: string;
 	currency: string;
 	amount: number;
@@ -10,15 +11,12 @@ export interface ITransactionsHistory extends Document {
 	sender: string;
 	comment: string;
 	status: string;
-	deleted: boolean;
 	confirmedAt: string;
 	createdAt: string;
 	updatedAt: string;
-	deletedAt: string;
 }
 
-export enum DeliveryStatusEnum {
+export enum ConfirmationStatusEnum {
 	PENDING = 'Pending',
 	CONFIRMED = 'Confirmed',
 }
-
