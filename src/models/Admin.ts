@@ -27,12 +27,12 @@ const AdminSchema: Schema = new Schema(
  * - virtuals
  */
 AdminSchema.pre<IAdmin>('save', async function (next) {
-  var admin = this;
+	var admin = this;
 
 	/**
 	 * Ensures the password is hashed before save
 	 */
-  if (!admin.isModified('password')) return next();
+	if (!admin.isModified('password')) return next();
 
 	// generate a salt
 	bcrypt.genSalt(10, function (err, salt) {
@@ -46,6 +46,7 @@ AdminSchema.pre<IAdmin>('save', async function (next) {
 			admin.password = hash;
 			next();
 		});
+	});
 });
 
 /**

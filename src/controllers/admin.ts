@@ -64,8 +64,7 @@ export default class AdminController {
       const adminId = req.user?._id;
       const id = req.params.adminId;
       const isSuperAdmin = req.user?.isSuper;
-      const adminRole = req.user?.role;
-      let { isSuper, role, ...body } = req.body;
+      let { isSuper, ...body } = req.body;
       // check that phone number is never taken
       // const phoneTaken = await AdminService.getAdmin({ phone: body.phone });
       // if (phoneTaken) {
@@ -80,7 +79,7 @@ export default class AdminController {
       } else {
         if (id !== adminId) {
           throw new APIError({
-            message: `Unauthorized ${adminRole} User`,
+            message: `Unauthorized User`,
             status: httpStatus.UNAUTHORIZED,
           });
         }

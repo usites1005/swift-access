@@ -79,7 +79,7 @@ export default class AuthMiddleware {
 
 			const user = await AdminModel.findById(id);
 
-			if (user && user.role === 'Admin') {
+			if (user) {
 				req.user = user as TAllUsers;
 			} else {
 				throw new APIError({
@@ -136,7 +136,7 @@ export default class AuthMiddleware {
 
 			const user = await AdminModel.findById(id);
 
-			if (user && user.role === 'Admin' && user.isSuper) {
+			if (user && user.isSuper) {
 				req.user = user as TAllUsers;
 			} else {
 				throw new APIError({
