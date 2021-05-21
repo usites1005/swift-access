@@ -20,8 +20,6 @@ const AdminSchema: Schema = new Schema(
 		isVerified: { type: Boolean, default: false },
 		isSuper: { type: Boolean, default: false },
 		createdBy: { type: Types.ObjectId, ref: 'Admin' },
-		deleted: { type: Boolean, default: false },
-		deletedAt: { type: Date },
 	},
 	{ timestamps: true }
 );

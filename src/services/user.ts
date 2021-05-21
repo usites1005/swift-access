@@ -11,13 +11,12 @@ export default class UserService {
 		// check if user already exists
 		const existingUser = await UserModel.findOne({
 			$or: [{ email }, { username }],
-			deleted: false,
 		});
 
 		if (existingUser) {
 			throw new Error('Email or username is already in use');
-    }
-    // todo move this hash to the user model file
+		}
+		// todo move this hash to the user model file
 		const hashAnswer = BcryptService.hashPassword(data.sAnswer);
 		data.sAnswer = hashAnswer;
 		const newUser = new UserModel(data);
@@ -31,7 +30,6 @@ export default class UserService {
 		const user = await UserModel.findOne({
 			email,
 			isVerified: true,
-			deleted: false,
 		});
 
 		if (!user) {
@@ -41,7 +39,7 @@ export default class UserService {
 		const passwordMatch = BcryptService.comparePassword(
 			password,
 			user.password
-    );    
+		);
 
 		if (!passwordMatch) {
 			return null;
@@ -59,7 +57,6 @@ export default class UserService {
 		const user = await UserModel.findOne({
 			email,
 			isVerified: true,
-			deleted: false,
 		});
 
 		if (!user) {
@@ -83,14 +80,13 @@ export default class UserService {
 	/* GET SINGLE USER */
 	static async getUser(data: Partial<IUser>) {
 		return UserModel.findOne({
-			deleted: false,
 			...data,
 		} as FilterQuery<IUser>);
 	}
 
 	/* GET ALL USERS */
 	static async getUsers(data: {}) {
-		return UserModel.find({ deleted: false, ...data }).sort({ createdAt: -1 });
+		return UserModel.find({ ...data }).sort({ createdAt: -1 });
 	}
 
 	static async updateUser({ id, ...data }: Partial<IUser>) {
@@ -109,7 +105,6 @@ export default class UserService {
 	static async queryUser(query: { [key: string]: any }) {
 		const user = await UserModel.find({
 			...query,
-			deleted: false,
 		}).countDocuments();
 		return user;
 	}

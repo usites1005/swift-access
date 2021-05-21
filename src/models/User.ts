@@ -22,8 +22,6 @@ const UserSchema = new Schema(
 		imageURL: { type: String, default: '' },
 		refBy: { type: String },
 		isVerified: { type: Boolean, default: false },
-		deleted: { type: Boolean, default: false },
-		deletedAt: { type: Date },
 	},
 	{ timestamps: true }
 );

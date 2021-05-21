@@ -10,12 +10,10 @@ export interface IAdmin extends Document {
 	password: string;
 	imageURL: string;
 	role: string;
-	deleted: boolean;
 	isSuper: boolean;
   isVerified: boolean;
   createdAt: string;
 	updatedAt: string;
-	deletedAt: string;
 }
 
 export enum AdminEnumType {
@@ -36,13 +34,6 @@ export type UserType = string | IAdmin;
 
 export type IAllUsers = IAdmin & IUser & null;
 
-export function enumToArray(enumObject: any): string[] {
-	const keys: string[] = (Object.values(enumObject) as string[]).filter(
-		(key) => key
-	);
-	return keys;
-}
-
 export interface AdminPure {
 	id?: string;
 	fullName: string;
@@ -51,7 +42,6 @@ export interface AdminPure {
 	password: string;
 	imageURL: string;
 	role: string;
-	deleted: boolean;
   isSuper: boolean;
   isVerified: boolean;
 }
