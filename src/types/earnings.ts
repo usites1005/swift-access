@@ -17,3 +17,9 @@ export interface EarningsPure {
 	amount: number;
 	comment: string;
 }
+
+export enum EarningTypeEnum {
+	LBONUS = 'L Bonus',
+	RBONUS = 'R Bonus',
+	ROI = 'ROI',
+}

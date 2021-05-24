@@ -20,3 +20,8 @@ export enum ConfirmationStatusEnum {
 	PENDING = 'Pending',
 	CONFIRMED = 'Confirmed',
 }
+
+export enum TransactionTypeEnum {
+	DEPOSIT = 'Deposit',
+	WITHDRAW = 'Withdraw',
+}

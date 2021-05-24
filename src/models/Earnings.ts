@@ -1,10 +1,15 @@
 import { model, Schema, Types } from 'mongoose';
-import { IEarnings } from '../types/earnings';
+import { IEarnings, EarningTypeEnum } from '../types/earnings';
+import { enumToArray } from '../types/general';
 
 const EarningsSchema = new Schema(
 	{
 		userId: { type: Types.ObjectId, ref: 'User', required: true },
-		type: { type: String, required: true },
+		type: {
+			type: String,
+			enum: enumToArray(EarningTypeEnum),
+			required: true,
+		},
 		amount: { type: Number, required: true },
 		comment: { type: String, required: true },
 	},
