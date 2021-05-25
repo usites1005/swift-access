@@ -11,7 +11,7 @@ export default class AdminController {
   static async getAdmins(req: Request, res: Response, next: NextFunction) {
     try {
       const users = await AdminService.getAdmins(req);
-      res.json(sendResponse(httpStatus.OK, 'Users found', users));
+      res.json(sendResponse(httpStatus.OK, 'Admins found', users));
     } catch (err) {
       next(err);
     }
@@ -23,11 +23,11 @@ export default class AdminController {
       const user = await AdminService.getAdmin({ _id });
       if (!user) {
         throw new APIError({
-          message: 'User not found',
+          message: 'Admin not found',
           status: httpStatus.NOT_FOUND,
         });
       }
-      res.json(sendResponse(httpStatus.OK, 'User found', user));
+      res.json(sendResponse(httpStatus.OK, 'Admin found', user));
     } catch (err) {
       next(err);
     }
@@ -38,17 +38,14 @@ export default class AdminController {
       const admin = req.user;
       const data = req.body;
       const password = TokenService.generateCode();
-      const newUser = await AdminService.create({
+      const newAdmin = await AdminService.create({
         ...data,
         password,
         createdBy: admin,
       });
 
-      // send mail with login details
-      // EmailService.sendLoginDetails(newUser, password);
-
       res.json(
-        sendResponse(httpStatus.CREATED, 'User created successfully', newUser),
+        sendResponse(httpStatus.CREATED, 'Admin created successfully', newAdmin),
       );
     } catch (err) {
       next(
@@ -65,21 +62,14 @@ export default class AdminController {
       const id = req.params.adminId;
       const isSuperAdmin = req.user?.isSuper;
       let { isSuper, ...body } = req.body;
-      // check that phone number is never taken
-      // const phoneTaken = await AdminService.getAdmin({ phone: body.phone });
-      // if (phoneTaken) {
-      //   throw new APIError({
-      //     message: `Phone number is in use by another user`,
-      //     status: httpStatus.BAD_REQUEST,
-      //   });
-      // }
+
       let admin;
       if (isSuperAdmin) {
         admin = await AdminService.updateAdmin({ ...req.body, id });
       } else {
         if (id !== adminId) {
           throw new APIError({
-            message: `Unauthorized User`,
+            message: `Unauthorized Admin`,
             status: httpStatus.UNAUTHORIZED,
           });
         }
@@ -88,11 +78,11 @@ export default class AdminController {
       }
       if (!admin) {
         throw new APIError({
-          message: 'User not found',
+          message: 'Admin not found',
           status: httpStatus.NOT_FOUND,
         });
       }
-      res.json(sendResponse(httpStatus.OK, 'User updated', admin));
+      res.json(sendResponse(httpStatus.OK, 'Admin updated', admin));
     } catch (err) {
       next(err);
     }

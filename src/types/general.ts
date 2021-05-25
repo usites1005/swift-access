@@ -5,7 +5,7 @@ import { IUser } from './user';
 export type TAllUsers = IAdmin & IUser;
 
 interface IRequest extends Request {
-  user?: TAllUsers;
+  user: TAllUsers;
 }
 
 export default IRequest;

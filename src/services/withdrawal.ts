@@ -1,31 +1,53 @@
-import TransactionsModel from '../models/Withdrawal';
-import { TransactionsPure , ConfirmationStatusEnum, TransactionTypeEnum} from '../types/withdrawal';
+import WithdrawalModel from '../models/Withdrawal';
+import {
+	WithdrawalPure,
+	WithdrawalStatusEnum,
+	IWithdrawal,
+} from '../types/withdrawal';
 
 export default class TransactionsService {
-	/* SEND */
-	static async create(data: TransactionsPure) {
-		const newTransaction = new TransactionsModel(data);
+	/* user send withdrawal request */
+	static async create(data: WithdrawalPure) {
+		const newRequest = new WithdrawalModel(data);
 
-		await newTransaction.save();
-		return newTransaction;
+		await newRequest.save();
+		return newRequest;
 	}
 
-	/* RECEIVE */
-	static async receive(data: TransactionsPure) {
-		const newEarnings = new TransactionsModel(data);
+	/* UPDATE WITHDRAWAL (ADMIN) */
+	static async updateToPaid({ userId, id }: Partial<IWithdrawal) {
+		const withdrawal = WithdrawalModel.findOneAndUpdate(
+			{ _id: id, userId },
+			{ status: WithdrawalStatusEnum.PAID },
+			{ new: true }
+		);
 
-		await newEarnings.save();
-		return newEarnings;
+		return withdrawal;
 	}
 
-	/* GET ALL TRANSACTIONS (ADMIN) */
-	static async getAllEarnings() {
-		return TransactionsModel.find().sort({ createdAt: -1 });
+	/* GET ALL USER WITHDRAWALS */
+	static async getAllUserWithdrawals(userId: string) {
+		return WithdrawalModel.find({ userId }).sort({ createdAt: -1 });
 	}
 
-	/* UPDATE TRANSACTION (ADMIN) */
-	static async queryEarnings(query: { [key: string]: any }) {
-		return await TransactionsModel.find({
+	/* GET WITHDRAWAL BY ID */
+	static async getWithdrawalById(id: string) {
+		return WithdrawalModel.findById(id);
+	}
+
+	/* GET WITHDRAWAL BY DESTINATION ADDRESS */
+	static async getWithdrawalByDestinationAddress(address: string) {
+		return WithdrawalModel.findOne({ destination: address });
+	}
+
+	/* GET ALL WITHDRAWALS (ADMIN) */
+	static async getAllWithdrawals() {
+		return WithdrawalModel.find().sort({ createdAt: -1 });
+	}
+
+	/* QUERY WITHDRAWALS (ADMIN) */
+	static async queryWithdrawals(query: { [key: string]: any }) {
+		return await WithdrawalModel.find({
 			...query,
 		}).countDocuments();
 	}

@@ -1,32 +1,24 @@
 import { model, Schema, Types } from 'mongoose';
-import {
-	ITransactions,
-	ConfirmationStatusEnum,
-	TransactionTypeEnum,
-} from '../types/withdrawal';
+import { WithdrawalStatusEnum, IWithdrawal } from '../types/withdrawal';
 import { enumToArray } from '../types/general';
 
-const TransactionsSchema = new Schema(
+const WithdrawalsSchema = new Schema(
 	{
-		userId: { type: Types.ObjectId, ref: 'User', required: true },
-		type: {
-			type: String,
-			enum: enumToArray(TransactionTypeEnum),
-			required: true,
-		},
+    userId: { type: Types.ObjectId, ref: 'User', required: true },
+    // accountId: { type: Types.ObjectId, ref: 'UserAccount', required: true },
 		dollarAmount: { type: Number, required: true },
 		destination: { type: String, required: true },
 		sender: { type: String, required: true },
 		comment: { type: String, required: true },
 		status: {
 			type: String,
-			enum: enumToArray(ConfirmationStatusEnum),
+			enum: enumToArray(WithdrawalStatusEnum),
 			required: true,
-			default: ConfirmationStatusEnum.PENDING,
+			default: WithdrawalStatusEnum.PENDING,
 		},
-		confirmedAt: { type: Date },
+		paidAt: { type: Date },
 	},
 	{ timestamps: true }
 );
 
-export default model<ITransactions>('Transactions', TransactionsSchema);
+export default model<IWithdrawal>('Withdrawals', WithdrawalsSchema);

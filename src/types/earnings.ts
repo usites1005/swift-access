@@ -3,6 +3,7 @@ import { Document } from 'mongoose';
 export interface IEarnings extends Document {
 	id: string;
 	userId: string;
+	accountId: string;
 	type: string;
 	amount: number;
 	comment: string;
@@ -13,6 +14,7 @@ export interface IEarnings extends Document {
 export interface EarningsPure {
 	id?: string;
 	userId: string;
+	accountId: string;
 	type: string;
 	amount: number;
 	comment: string;

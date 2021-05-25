@@ -1,42 +1,29 @@
-import { FilterQuery } from 'mongoose';
+// import { FilterQuery } from 'mongoose';
 import UserAccountModel from '../models/UserAccount';
-import { UserAccountPure, IUserAccount } from '../types/userAccount';
+import { UserAccountPure } from '../types/userAccount';
 
 export default class UserAccountService {
-	/* CREATE AN ACCOUNT */
-	// user can have multiple accounts created at the time of deposit. New accounts can only be created when the last one has been completed
+	/* GET ALL USER ACCOUNTS*/
+	static async getUserAccounts(userId: string) {
+		return await UserAccountModel.find({
+			userId,
+		}).sort({ createdAt: -1 });
+	}
+
+	/* CREATE A USER DEPOSIT ACCOUNT (ADMIN) */
 	static async create(data: UserAccountPure) {
-		// check if user has an account
-		const accountExists = await UserAccountModel.findOne({
-			userId: data.userId,
-			cycleCompleted: false,
-		} as FilterQuery<IUserAccount>);
-
-		if (accountExists) {
-			// throw error
-		}
 		const newUserAccount = new UserAccountModel(data);
-
 		await newUserAccount.save();
 		return newUserAccount;
 	}
 
-	/* GET ALL USER ACCOUNTS*/
-	static async getUserAccount(userId: string) {
-		return await UserAccountModel.findOne({
-			userId,
-		} as FilterQuery<IUserAccount>);
-	}
-
 	/* GET ALL ACCOUNTS (ADMIN) */
-	static async getAllUserAccounts() {
+	static async getAllUsersAccounts() {
 		return await UserAccountModel.find().sort({ createdAt: -1 });
 	}
 
-	/* QUERY ALL ACCOUNTS (ADMIN) */
-	static async queryUserAccount(query: { [key: string]: any }) {
-		return await UserAccountModel.find({
-			...query,
-		}).countDocuments();
+	/* QUERY ALL  ACCOUNTS (ADMIN) */
+	static async filterAllUsersAccounts(query: { [key: string]: any }) {
+		return await UserAccountModel.find({ ...query }).sort({ createdAt: -1 });
 	}
 }

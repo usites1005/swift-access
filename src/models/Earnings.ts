@@ -5,6 +5,7 @@ import { enumToArray } from '../types/general';
 const EarningsSchema = new Schema(
 	{
 		userId: { type: Types.ObjectId, ref: 'User', required: true },
+		accountId: { type: Types.ObjectId, ref: 'UserAccount', required: true },
 		type: {
 			type: String,
 			enum: enumToArray(EarningTypeEnum),

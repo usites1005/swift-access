@@ -99,6 +99,7 @@ export default class UserService {
 			},
 			{ new: true }
 		);
+		user.save();
 		return user;
 	}
 

@@ -1,27 +1,29 @@
 import { Document } from 'mongoose';
 
-export interface ITransactions extends Document {
+export interface IWithdrawal extends Document {
 	id: string;
 	userId: string;
+	// accountId: string;
 	dollarAmount: number;
 	destination: string;
 	sender: string;
 	comment: string;
 	status: string;
-	confirmedAt: string;
+	paidAt: string;
 	createdAt: string;
 	updatedAt: string;
 }
 
-export interface TransactionsPure {
-	userId: string;
+export interface WithdrawalPure {
+  userId: string;
+  // accountId: string;
 	dollarAmount: number;
 	destination: string;
 	sender: string;
 	comment: string;
 }
 
-export enum ConfirmationStatusEnum {
+export enum WithdrawalStatusEnum {
 	PENDING = 'Pending',
 	PAID = 'Paid',
 }
