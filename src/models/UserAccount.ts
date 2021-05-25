@@ -10,6 +10,8 @@ const UserAccountSchema = new Schema(
 		leadershipBonus: { type: Number, required: true, default: 0 },
 		totalWithdrawal: { type: Number, required: true, default: 0 },
 		accountBalance: { type: Number, required: true, default: 0 },
+		cycleCompleted: { type: Boolean, required: true, default: false },
+		depositDate: { type: Date },
 	},
 	{ timestamps: true }
 );

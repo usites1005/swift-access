@@ -19,8 +19,8 @@ export default class EarningsService {
 	}
 
 	/* GET ALL EARNINGS (ADMIN) */
-	static async getAllEarnings(data: {}) {
-		return EarningsModel.find({ ...data }).sort({ createdAt: -1 });
+	static async getAllEarnings() {
+		return EarningsModel.find().sort({ createdAt: -1 });
 	}
 
 	/* QUERY ALL EARNINGS (ADMIN) */

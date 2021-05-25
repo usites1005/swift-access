@@ -3,10 +3,7 @@ import { Document } from 'mongoose';
 export interface ITransactions extends Document {
 	id: string;
 	userId: string;
-	type: string;
-	currency: string;
-	amount: number;
-	coinAmount: number;
+	dollarAmount: number;
 	destination: string;
 	sender: string;
 	comment: string;
@@ -16,12 +13,15 @@ export interface ITransactions extends Document {
 	updatedAt: string;
 }
 
-export enum ConfirmationStatusEnum {
-	PENDING = 'Pending',
-	CONFIRMED = 'Confirmed',
+export interface TransactionsPure {
+	userId: string;
+	dollarAmount: number;
+	destination: string;
+	sender: string;
+	comment: string;
 }
 
-export enum TransactionTypeEnum {
-	DEPOSIT = 'Deposit',
-	WITHDRAW = 'Withdraw',
+export enum ConfirmationStatusEnum {
+	PENDING = 'Pending',
+	PAID = 'Paid',
 }

@@ -86,17 +86,36 @@ export default class UserController {
 		}
 	}
 
-	static async updateUser(req: IRequest, res: Response, next: NextFunction) {
+	static async addCoinAddress(
+		req: IRequest,
+		res: Response,
+		next: NextFunction
+	) {
 		try {
-			let { _id } = req.user!;
-			const user = await UserService.updateUser({ ...req.body, _id });
-			if (!user) {
+			let { id } = req.user!;
+			const { ethAddr, tronAddr } = req.body;
+			// check if the user has that coin already added
+			const user = await UserService.getUser({ _id: id });
+			if (ethAddr && user.ethAddr) {
 				throw new APIError({
-					message: 'User not found',
-					status: httpStatus.NOT_FOUND,
+					message: 'You already have an ETH address.',
+					status: httpStatus.FORBIDDEN,
 				});
 			}
-			res.json(sendResponse(httpStatus.OK, 'User updated', user));
+
+			if (tronAddr && user.tronAddr) {
+				throw new APIError({
+					message: 'You already have a TRON address.',
+					status: httpStatus.FORBIDDEN,
+				});
+			}
+
+			const updatedUser = await UserService.updateUser({
+				ethAddr,
+				tronAddr,
+				id,
+			});
+			res.json(sendResponse(httpStatus.OK, 'User updated', updatedUser));
 		} catch (err) {
 			next(err);
 		}

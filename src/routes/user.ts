@@ -13,13 +13,13 @@ router.post(
 	userController.signUp
 );
 
-// update logged in user
+// add coin address of logged in user
 router
 	.route('/me')
 	.put(
-		celebrate(validator.update, { abortEarly: false }),
+		celebrate(validator.addCoinAddress, { abortEarly: false }),
 		AuthMiddleware.userAuth,
-		userController.updateUser
+		userController.addCoinAddress
 	);
 
 // get logged in user

@@ -3,7 +3,7 @@ import {
 	ITransactions,
 	ConfirmationStatusEnum,
 	TransactionTypeEnum,
-} from '../types/transactions';
+} from '../types/withdrawal';
 import { enumToArray } from '../types/general';
 
 const TransactionsSchema = new Schema(
@@ -14,9 +14,7 @@ const TransactionsSchema = new Schema(
 			enum: enumToArray(TransactionTypeEnum),
 			required: true,
 		},
-		currency: { type: String, required: true },
-		amount: { type: Number, required: true },
-		coinAmount: { type: Number, required: true },
+		dollarAmount: { type: Number, required: true },
 		destination: { type: String, required: true },
 		sender: { type: String, required: true },
 		comment: { type: String, required: true },
