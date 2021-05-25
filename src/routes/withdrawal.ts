@@ -1,38 +1,38 @@
 import express from 'express';
 import { celebrate } from 'celebrate';
-import * as validator from '../validation/user';
-import userController from '../controllers/user';
+import * as validator from '../validation/withdrawal';
+import WithdrawalController from '../controllers/withdrawal';
 import AuthMiddleware from '../middleware/auth';
 
 const router = express.Router();
-
-// POST-- user signUp.
-router.post(
-	'/',
-	celebrate(validator.signup, { abortEarly: false }),
-	userController.signUp
-);
-
-// add coin address of logged in user
+// POST-- make a user withdrawal
 router
-	.route('/me')
-	.put(
-		celebrate(validator.addCoinAddress, { abortEarly: false }),
+	.route('/makeWithdrawal')
+	.post(
+		celebrate(validator.withdrawalRequest, { abortEarly: false }),
 		AuthMiddleware.userAuth,
-		userController.addCoinAddress
+		WithdrawalController.makeWithdrawal
 	);
 
-// get logged in user
-router.route('/me').put(AuthMiddleware.userAuth, userController.getMe);
-
-// get user's referrals
+// GET-- all users withdrawals
 router
-	.route('/referrals')
-	.get(AuthMiddleware.userAuth, userController.getUserReferrals);
+	.route('/getAllUserWithdrawals')
+	.get(AuthMiddleware.userAuth, WithdrawalController.getAllUserWithdrawals);
 
-// get user by id
+// GET-- all users withdrawals
+router.get(
+	'/getAllWithdrawals',
+	AuthMiddleware.adminOnlyAuth,
+	WithdrawalController.getAllWithdrawals
+);
+
+// PUT-- all users withdrawals
 router
-	.route('/:userId')
-	.get(AuthMiddleware.adminOnlyAuth, userController.getUser);
+	.route('/updateToPaid')
+	.put(
+		celebrate(validator.updateWithdrawalStatus, { abortEarly: false }),
+		AuthMiddleware.adminOnlyAuth,
+		WithdrawalController.updateToPaid
+	);
 
 export default router;

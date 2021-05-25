@@ -2,6 +2,7 @@ import express from 'express';
 import { celebrate } from 'celebrate';
 import * as validator from '../validation/user';
 import userController from '../controllers/user';
+import AnalyticsController from '../controllers/analytics';
 import AuthMiddleware from '../middleware/auth';
 
 const router = express.Router();
@@ -15,7 +16,7 @@ router.post(
 
 // add coin address of logged in user
 router
-	.route('/me')
+	.route('/address')
 	.put(
 		celebrate(validator.addCoinAddress, { abortEarly: false }),
 		AuthMiddleware.userAuth,
@@ -29,6 +30,13 @@ router.route('/me').put(AuthMiddleware.userAuth, userController.getMe);
 router
 	.route('/referrals')
 	.get(AuthMiddleware.userAuth, userController.getUserReferrals);
+
+//get user analytics
+router.get(
+	'/analytics',
+	AuthMiddleware.userAuth,
+	AnalyticsController.getUserData
+);
 
 // get user by id
 router

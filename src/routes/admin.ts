@@ -31,7 +31,7 @@ router
 	.route('/:userId')
 	.get(AuthMiddleware.adminOnlyAuth, userController.getUser);
 
-// PUT | DELETE
+// PUT
 router
 	.route('/:adminId')
 	.put(
@@ -40,6 +40,6 @@ router
 			AuthMiddleware.adminOnlyAuth,
 		],
 		adminController.updateAdmin
-	);
+  );
 
 export default router;
