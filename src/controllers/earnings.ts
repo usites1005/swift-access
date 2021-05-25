@@ -17,7 +17,7 @@ export default class EarningsController {
 		next: NextFunction
 	) {
 		try {
-			let userId = req.user.id;
+      let userId = req.user!.id;
 
 			const earnings = await EarningsService.getUserEarnings(userId);
 			res.json(sendResponse(httpStatus.OK, 'User earnings found', earnings));

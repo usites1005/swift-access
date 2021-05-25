@@ -73,7 +73,6 @@ export default class AdminController {
             status: httpStatus.UNAUTHORIZED,
           });
         }
-        // if (req.user?.phone) delete body.phone;
         admin = await AdminService.updateAdmin({ ...body, id });
       }
       if (!admin) {

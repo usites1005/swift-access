@@ -15,7 +15,7 @@ export default class TransactionsService {
 	}
 
 	/* UPDATE WITHDRAWAL (ADMIN) */
-	static async updateToPaid({ userId, id }: Partial<IWithdrawal) {
+	static async updateToPaid({ userId, id }: Partial<IWithdrawal>) {
 		const withdrawal = WithdrawalModel.findOneAndUpdate(
 			{ _id: id, userId },
 			{ status: WithdrawalStatusEnum.PAID },

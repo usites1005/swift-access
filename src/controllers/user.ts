@@ -96,6 +96,14 @@ export default class UserController {
 			const { ethAddr, tronAddr } = req.body;
 			// check if the user has that coin already added
 			const user = await UserService.getUser({ _id: id });
+
+			if (!user) {
+				throw new APIError({
+					message: 'Unauthorized User',
+					status: httpStatus.UNAUTHORIZED,
+				});
+			}
+
 			if (ethAddr && user.ethAddr) {
 				throw new APIError({
 					message: 'You already have an ETH address.',
@@ -110,12 +118,10 @@ export default class UserController {
 				});
 			}
 
-			const updatedUser = await UserService.updateUser({
-				ethAddr,
-				tronAddr,
-				id,
-			});
-			res.json(sendResponse(httpStatus.OK, 'User updated', updatedUser));
+			user.ethAddr = ethAddr || user.ethAddr;
+			user.tronAddr = tronAddr || user.tronAddr;
+
+			res.json(sendResponse(httpStatus.OK, 'User updated', user));
 		} catch (err) {
 			next(err);
 		}

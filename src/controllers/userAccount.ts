@@ -7,6 +7,7 @@ import IRequest from '../types/general';
 import { getEndDate } from '../common/dates';
 
 export default class UserAccountController {
+  // admin only
 	static async createUserAccount(
 		req: IRequest,
 		res: Response,
@@ -14,20 +15,19 @@ export default class UserAccountController {
 	) {
 		try {
 			const data = req.body;
-			const userId = req.user.id;
 			const cycleEndDate = getEndDate();
 
 			const newAccount = await UserAccountService.create({
 				...data,
 				cycleEndDate,
-				userId,
+				userId: data.userId,
 			});
 
 			res.json(
 				sendResponse(
 					httpStatus.CREATED,
 					'User account created successfully',
-          newAccount
+					newAccount
 				)
 			);
 		} catch (err) {
@@ -46,7 +46,7 @@ export default class UserAccountController {
 		next: NextFunction
 	) {
 		try {
-			let userId = req.user.id;
+			let userId = req.user!.id;
 
 			const account = await UserAccountService.getUserAccounts(userId);
 			res.json(sendResponse(httpStatus.OK, 'User accounts found', account));

@@ -13,7 +13,8 @@ export default class WithdrawalController {
 		next: NextFunction
 	) {
 		try {
-			let userId = req.user.id;
+			let userId = req.user!.id;
+
 			const { dollarAmount, destination, sender } = req.body;
 			const comment = 'Account withdrawal';
 			const withdrawalRequest = await WithdrawalService.create({
@@ -50,23 +51,19 @@ export default class WithdrawalController {
 	}
 
 	// admin
-	static async updateToPaid(
-		req: IRequest,
-		res: Response,
-		next: NextFunction
-	) {
+	static async updateToPaid(req: IRequest, res: Response, next: NextFunction) {
 		try {
 			const { userId, withdrawalId } = req.body;
 			const withdrawal = await WithdrawalService.updateToPaid({
 				userId,
 				id: withdrawalId,
-      });
-      if (!withdrawal) {
-        throw new APIError({
-          message: 'No withdraw record found with this id',
-          status: httpStatus.NOT_FOUND,
-        });
-      }
+			});
+			if (!withdrawal) {
+				throw new APIError({
+					message: 'No withdraw record found with this id',
+					status: httpStatus.NOT_FOUND,
+				});
+			}
 			res.json(sendResponse(httpStatus.OK, 'Withdrawal updated', withdrawal));
 		} catch (err) {
 			next(err);
@@ -80,7 +77,7 @@ export default class WithdrawalController {
 		next: NextFunction
 	) {
 		try {
-			const userId = req.user?.id;
+			const userId = req.user!.id;
 			const withdrawals = await WithdrawalService.getAllUserWithdrawals(userId);
 			res.json(sendResponse(httpStatus.OK, 'Withdrawals found', withdrawals));
 		} catch (err) {
