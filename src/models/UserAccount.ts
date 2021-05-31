@@ -5,7 +5,7 @@ const UserAccountSchema = new Schema(
 	{
 		userId: { type: Types.ObjectId, ref: 'User', required: true },
 		amountDeposited: { type: Number, required: true, default: 0 },
-		destination: { type: String, required: true },
+		destinationAddr: { type: String, required: true },
 		sender: { type: String, required: true },
 		cycleEndDate: { type: Date },
 	},

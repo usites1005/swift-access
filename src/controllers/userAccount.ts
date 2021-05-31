@@ -2,6 +2,7 @@ import { Response, NextFunction } from 'express';
 import httpStatus from 'http-status';
 import UserService from '../services/user';
 import UserAccountService from '../services/userAccount';
+import AdminAccountService from '../services/adminAccount';
 import sendResponse from '../common/response';
 import APIError from '../common/APIError';
 import IRequest from '../types/general';
@@ -25,6 +26,39 @@ export default class UserAccountController {
 			if (!user) {
 				throw new APIError({
 					message: 'User not found',
+					status: httpStatus.NOT_FOUND,
+				});
+			}
+
+			const { btcAddr, ethAddr, tronAddr } = user;
+
+			if (![btcAddr, tronAddr, ethAddr].includes(req.body.destinationAddr)) {
+				throw new APIError({
+					message: `The destination address is not in the user's profile.`,
+					status: httpStatus.NOT_FOUND,
+				});
+			}
+
+			// Get admin admin account
+			const adminAccount = await AdminAccountService.getAdminAccounts();
+
+			if (adminAccount.length < 1) {
+				throw new APIError({
+					message: `No admin crypto account found.`,
+					status: httpStatus.NOT_FOUND,
+				});
+			}
+
+			if (
+				![
+					adminAccount[0].adminBTCAddress,
+					adminAccount[0].adminETHAddress,
+					adminAccount[0].adminTronAddress,
+				].includes(req.body.sender)
+			) {
+				[0];
+				throw new APIError({
+					message: `The sender address is not in the admin's profile.`,
 					status: httpStatus.NOT_FOUND,
 				});
 			}
@@ -111,7 +145,6 @@ export default class UserAccountController {
 	) {
 		try {
 			let userId = req.user!.id;
-
 			const account = await UserAccountService.getUserAccounts(userId);
 			res.json(sendResponse(httpStatus.OK, 'User accounts found', account));
 		} catch (err) {
@@ -120,7 +153,7 @@ export default class UserAccountController {
 	}
 
 	// admin
-	static async getAllUserAccounts(
+	static async getAllUsersAccounts(
 		_req: IRequest,
 		res: Response,
 		next: NextFunction

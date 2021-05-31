@@ -1,7 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import httpStatus from 'http-status';
 import UserService from '../services/user';
-import AdminService from '../services/admin';
 import TokenService from '../services/token';
 import config from '../config/env';
 import sendResponse from '../common/response';
@@ -28,6 +27,13 @@ export default class AuthController {
 				throw new APIError({
 					message: 'User not found',
 					status: httpStatus.NOT_FOUND,
+				});
+			}
+			if (user.isVerified) {
+				throw new APIError({
+					message:
+						'Account has been previously verified. Please go ahead and login',
+					status: 400,
 				});
 			}
 			// send account verification to user
@@ -132,28 +138,15 @@ export default class AuthController {
 		res: Response,
 		next: NextFunction
 	) {
-		const url = req.url.split('/');
-		const userType = url[url.length - 1];
-
 		try {
 			const { oldPassword, newPassword } = req.body;
 			const email = req.user!.email;
 
-			let user;
-			if (userType === 'user') {
-				user = await UserService.changePassword(
-					email,
-					oldPassword,
-					newPassword
-				);
-			}
-			if (userType === 'admin') {
-				user = await AdminService.changePassword(
-					email,
-					oldPassword,
-					newPassword
-				);
-			}
+			const user = await UserService.changePassword(
+				email,
+				oldPassword,
+				newPassword
+			);
 
 			if (!user) {
 				throw new APIError({
@@ -217,7 +210,7 @@ export default class AuthController {
 			await userToEdit.save();
 
 			res.json(
-				sendResponse(httpStatus.OK, 'Password change successful', {}, null)
+				sendResponse(httpStatus.OK, 'Password change successful. Please login with your new password.', {}, null)
 			);
 		} catch (err) {
 			next(err);

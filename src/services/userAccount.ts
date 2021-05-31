@@ -1,13 +1,13 @@
-// import { FilterQuery } from 'mongoose';
+import { FilterQuery } from 'mongoose';
 import UserAccountModel from '../models/UserAccount';
-import { UserAccountPure } from '../types/userAccount';
+import { UserAccountPure, IUserAccount } from '../types/userAccount';
 
 export default class UserAccountService {
 	/* GET ALL USER ACCOUNTS*/
-	static async getUserAccounts(userId: string) {
+	static async getUserAccounts(userId: string) {    
 		return await UserAccountModel.find({
 			userId,
-		}).sort({ createdAt: -1 });
+		} as FilterQuery<IUserAccount>).sort({ createdAt: -1 });
 	}
 
 	/* CREATE A USER DEPOSIT ACCOUNT (ADMIN) */

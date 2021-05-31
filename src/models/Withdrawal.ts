@@ -4,11 +4,10 @@ import { enumToArray } from '../types/general';
 
 const WithdrawalsSchema = new Schema(
 	{
-    userId: { type: Types.ObjectId, ref: 'User', required: true },
-    // accountId: { type: Types.ObjectId, ref: 'UserAccount', required: true },
+		userId: { type: Types.ObjectId, ref: 'User', required: true },
+		// accountId: { type: Types.ObjectId, ref: 'UserAccount', required: true },
 		dollarAmount: { type: Number, required: true },
-		destination: { type: String, required: true },
-		sender: { type: String, required: true },
+		destinationAddr: { type: String, required: true },
 		comment: { type: String, required: true },
 		status: {
 			type: String,

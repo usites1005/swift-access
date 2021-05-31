@@ -25,7 +25,7 @@ router.post(
 );
 
 router.post(
-	'/password/forgot/:type',
+	'/password/forgot',
 	celebrate(forgotPassword, { abortEarly: true }),
 	AuthController.forgotPassword
 );
@@ -37,24 +37,16 @@ router.post(
 );
 
 router.post(
-	'/password/reset/:type',
+	'/password/reset',
 	celebrate(resetPassword, { abortEarly: true }),
 	AuthController.resetPassword
 );
 
 router.post(
-	'/password/change/user',
+	'/password/change',
 	[AuthMiddleware.userAuth, celebrate(changePassword, { abortEarly: false })],
 	AuthController.changePassword
 );
 
-router.post(
-	'/password/change/admin',
-	[
-		AuthMiddleware.superAdminAuth,
-		celebrate(changePassword, { abortEarly: false }),
-	],
-	AuthController.changePassword
-);
 
 export default router;

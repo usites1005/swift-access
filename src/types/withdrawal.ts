@@ -3,10 +3,8 @@ import { Document } from 'mongoose';
 export interface IWithdrawal extends Document {
 	id: string;
 	userId: string;
-	// accountId: string;
 	dollarAmount: number;
-	destination: string;
-	sender: string;
+	destinationAddr: string;
 	comment: string;
 	status: string;
 	paidAt: string;
@@ -15,11 +13,9 @@ export interface IWithdrawal extends Document {
 }
 
 export interface WithdrawalPure {
-  userId: string;
-  // accountId: string;
+	userId: string;
 	dollarAmount: number;
-	destination: string;
-	sender: string;
+	destinationAddr: string;
 	comment: string;
 }
 

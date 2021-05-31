@@ -33,7 +33,7 @@ class AnalyticsController {
 				);
 			}
 			// get all user withdrawals and get the total withdrawals
-			const userWithdrawals = await WithdrawalService.getAllUserWithdrawals(
+			const userWithdrawals = await WithdrawalService.getUserWithdrawals(
 				userId
 			);
 			let totalWithdrawals: number = 0;

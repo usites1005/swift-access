@@ -13,16 +13,21 @@ export default class WithdrawalController {
 		next: NextFunction
 	) {
 		try {
-			let userId = req.user!.id;
+			let { id: userId, btcAddr, ethAddr, tronAddr } = req.user!;
 
-			const { dollarAmount, destination, sender } = req.body;
+			const { dollarAmount, destinationAddr } = req.body;
 			const comment = 'Account withdrawal';
+			if (![btcAddr, tronAddr, ethAddr].includes(destinationAddr)) {
+				throw new APIError({
+					message: `The destination address is not in the user's profile.`,
+					status: httpStatus.NOT_FOUND,
+				});
+			}
 			const withdrawalRequest = await WithdrawalService.create({
 				userId,
 				comment,
 				dollarAmount,
-				destination,
-				sender,
+				destinationAddr,
 			});
 			res.json(
 				sendResponse(
@@ -71,14 +76,14 @@ export default class WithdrawalController {
 	}
 
 	// user
-	static async getAllUserWithdrawals(
+	static async getUserWithdrawals(
 		req: IRequest,
 		res: Response,
 		next: NextFunction
 	) {
 		try {
 			const userId = req.user!.id;
-			const withdrawals = await WithdrawalService.getAllUserWithdrawals(userId);
+			const withdrawals = await WithdrawalService.getUserWithdrawals(userId);
 			res.json(sendResponse(httpStatus.OK, 'Withdrawals found', withdrawals));
 		} catch (err) {
 			next(err);

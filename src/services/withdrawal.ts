@@ -26,7 +26,7 @@ export default class TransactionsService {
 	}
 
 	/* GET ALL USER WITHDRAWALS */
-	static async getAllUserWithdrawals(userId: string) {
+	static async getUserWithdrawals(userId: string) {
 		return WithdrawalModel.find({ userId }).sort({ createdAt: -1 });
 	}
 
@@ -37,7 +37,7 @@ export default class TransactionsService {
 
 	/* GET WITHDRAWAL BY DESTINATION ADDRESS */
 	static async getWithdrawalByDestinationAddress(address: string) {
-		return WithdrawalModel.findOne({ destination: address });
+		return WithdrawalModel.findOne({ destinationAddr: address });
 	}
 
 	/* GET ALL WITHDRAWALS (ADMIN) */

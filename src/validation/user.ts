@@ -15,8 +15,10 @@ export const signup = {
 };
 
 export const addCoinAddress = {
-  [Segments.BODY]: Joi.object().keys({
-		ethAddr: Joi.string(),
-		tronAddr: Joi.string(),
-	}),
-}
+	[Segments.BODY]: Joi.object()
+		.keys({
+			ethAddr: Joi.string().allow(null, ''),
+			tronAddr: Joi.string().allow(null, ''),
+		})
+		.or('ethAddr', 'tronAddr'),
+};

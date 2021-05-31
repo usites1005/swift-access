@@ -119,7 +119,9 @@ export default class UserController {
 			}
 
 			user.ethAddr = ethAddr || user.ethAddr;
-			user.tronAddr = tronAddr || user.tronAddr;
+      user.tronAddr = tronAddr || user.tronAddr;
+      
+			user.save();
 
 			res.json(sendResponse(httpStatus.OK, 'User updated', user));
 		} catch (err) {
