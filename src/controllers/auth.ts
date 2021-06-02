@@ -174,8 +174,7 @@ export default class AuthController {
 				});
 			}
 
-			// todo: change this to password reset mail
-			EmailService.sendVerificationMail(user.toJSON());
+			EmailService.sendForgotPasswordMail(user.toJSON());
 
 			res.json(
 				sendResponse(httpStatus.OK, 'Password reset code sent', {}, null)
@@ -190,10 +189,16 @@ export default class AuthController {
 
 		try {
 			const userData = TokenService.verifyToken(resetToken, verificationSecret);
+			const user = await UserService.getUser({ email: userData.user.email });
+			if (!user) {
+				throw new APIError({
+					message: 'User not found',
+					status: 404,
+				});
+			}
+			const { tokenFor } = userData;
 
-			const { user: userToEdit, tokenFor } = userData;
-
-			if (email !== userToEdit.email) {
+			if (email !== user.email) {
 				throw new APIError({
 					message: 'Unauthorized User',
 					status: 400,
@@ -206,12 +211,23 @@ export default class AuthController {
 					status: 400,
 				});
 			}
-			userToEdit.password = newPassword;
-			await userToEdit.save();
+			user.password = newPassword;
+			await user.save();
 
-			res.json(
-				sendResponse(httpStatus.OK, 'Password change successful. Please login with your new password.', {}, null)
+			const convertUser = user.toJSON();
+
+			const newToken = TokenService.generateToken(
+				convertUser,
+				loginSecret,
+				loginExpiresIn,
+				TokenFor.Access
 			);
+
+			res
+				.status(httpStatus.OK)
+				.json(
+					sendResponse(httpStatus.OK, 'Account verified', user, null, newToken)
+				);
 		} catch (err) {
 			next(err);
 		}

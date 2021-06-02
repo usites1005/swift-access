@@ -1,13 +1,9 @@
 import sgMail from '@sendgrid/mail';
 import { MailDataRequired } from '@sendgrid/helpers/classes/mail';
 import config from '../config/env';
-import { IUser, UserPure } from '../types/user';
-// import { confirmTrackingId } from '../mailTemplates/trackingId';
+import { UserPure } from '../types/user';
 import TokenService from '../services/token';
 import { TokenFor } from '../types/general';
-
-// import { forgotPasswordMail } from '../mailTemplates/forgotPassword';
-// import { adminLoginDetailsMail } from '../mailTemplates/adminLoginDetails';
 
 const sender = config.SENDGRID_AUTHENTICATED_SENDER_EMAIL;
 const verificationExpiresIn = config.verificationExpiresIn;
@@ -47,21 +43,26 @@ async function sendMail(msg: MailDataRequired) {
 	}
 }
 export default class EmailService {
-	public static async sendForgotPasswordMail(user: IUser, code: string) {
-    console.log(user, code);
-    
-		// create mail template
-		// const msg = {
-		// 	to: user.email, // Change to your recipient
-		// 	from: sender, // Change to your verified sender
-		// 	subject: 'Password Reset',
-		// 	html: forgotPasswordMail({
-		// 		name: `${user.fullName}`,
-		// 		resetCode: code,
-		// 	}),
-		// };
-		// // create mail and send to the user
-		// return sendMail(msg);
+	public static async sendForgotPasswordMail(user: UserPure) {
+		const token = TokenService.generateToken(
+			{ ...user },
+			verificationSecret,
+			verificationExpiresIn,
+			TokenFor.ResetPassword
+		);
+
+		const msg = generateMessageTemplate(
+			sender,
+			user!.email,
+			{
+				name: user?.fullName,
+				resetLink: `${config.frontEndUrl}/auth/reset?resetToken=${token}`,
+				message:
+					"You requested to reset your password. Please ignore if you didn't make the request.",
+			},
+			config.RESET_PASSWORD_TEMPLATE_ID
+		);
+		return await sendMail(msg);
 	}
 
 	public static async sendVerificationMail(user: UserPure) {    

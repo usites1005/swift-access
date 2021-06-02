@@ -3,13 +3,18 @@ import { celebrate } from 'celebrate';
 import * as validator from '../validation/admin';
 import * as userAccountValidator from '../validation/userAccount';
 import * as withdrawalValidator from '../validation/withdrawal';
+import * as adminAccountValidator from '../validation/adminAccount';
 import UserAccountController from '../controllers/userAccount';
+import AdminAccountController from '../controllers/adminAccount';
 import WithdrawalController from '../controllers/withdrawal';
 import adminController from '../controllers/admin';
 import AuthMiddleware from '../middleware/auth';
 import EarningsController from '../controllers/earnings';
 
 const router = express.Router();
+
+// GET-- all admin address account
+router.get('/getAdminAccounts', AdminAccountController.getAdminAccounts);
 
 // GET-- all admin
 router.get('/', AuthMiddleware.adminOnlyAuth, adminController.getAdmins);
@@ -85,6 +90,24 @@ router
 		UserAccountController.createUserAccount
 	);
 
+// // POST-- create admin crypto address account
+// router
+// 	.route('/createAdminAccount')
+// 	.post(
+// 		celebrate(adminAccountValidator.createAdminAccount, { abortEarly: false }),
+// 		AuthMiddleware.adminOnlyAuth,
+// 		AdminAccountController.createAdminAccount
+// 	);
+
+// add coin address of logged in user
+router
+	.route('/addCoinAddress')
+	.post(
+		celebrate(adminAccountValidator.addCoinAddress, { abortEarly: false }),
+		AuthMiddleware.adminOnlyAuth,
+		AdminAccountController.addCoinAddress
+	);
+
 // GET-- all users withdrawals
 router.get(
 	'/getAllWithdrawals',
@@ -93,15 +116,13 @@ router.get(
 );
 
 // PUT-- all users withdrawals
-router
-	.route('/updateToPaid')
-	.put(
-		celebrate(withdrawalValidator.updateWithdrawalStatus, {
-			abortEarly: false,
-		}),
-		AuthMiddleware.adminOnlyAuth,
-		WithdrawalController.updateToPaid
-	);
+router.route('/updateToPaid').put(
+	celebrate(withdrawalValidator.updateWithdrawalStatus, {
+		abortEarly: false,
+	}),
+	AuthMiddleware.adminOnlyAuth,
+	WithdrawalController.updateToPaid
+);
 
 // POST-- create admin
 router.post(

@@ -5,7 +5,7 @@ import WithdrawalService from '../services/withdrawal';
 import EarningsService from '../services/earnings';
 import UserAccountService from '../services/userAccount';
 import IRequest from '../types/general';
-import { EarningTypeEnum } from '../types/earnings';
+import { EarningTypeEnum, IEarnings } from '../types/earnings';
 
 class AnalyticsController {
 	static async getUserData(req: IRequest, res: Response, next: NextFunction) {
@@ -21,6 +21,7 @@ class AnalyticsController {
 				totalRBonus: number;
 				totalLBonus: number;
 				availableBalance: number;
+				earnings: IEarnings[];
 			};
 
 			// get all user accounts and get the total deposits
@@ -33,7 +34,7 @@ class AnalyticsController {
 				);
 			}
 			// get all user withdrawals and get the total withdrawals
-			const userWithdrawals = await WithdrawalService.getUserWithdrawals(
+			const userWithdrawals = await WithdrawalService.getUserPaidWithdrawals(
 				userId
 			);
 			let totalWithdrawals: number = 0;
@@ -80,6 +81,7 @@ class AnalyticsController {
 				totalRBonus,
 				totalLBonus,
 				availableBalance,
+				earnings: userEarnings,
 			};
 
 			res.json(

@@ -54,7 +54,7 @@ export default class UserAccountController {
 					adminAccount[0].adminBTCAddress,
 					adminAccount[0].adminETHAddress,
 					adminAccount[0].adminTronAddress,
-				].includes(req.body.sender)
+				].includes(data.sender)
 			) {
 				[0];
 				throw new APIError({

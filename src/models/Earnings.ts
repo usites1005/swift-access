@@ -12,7 +12,7 @@ const EarningsSchema = new Schema(
 			required: true,
 		},
 		amount: { type: Number, required: true },
-		comment: { type: String, required: true },
+		comment: { type: String },
 	},
 	{ timestamps: true }
 );
