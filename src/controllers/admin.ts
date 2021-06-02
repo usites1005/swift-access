@@ -7,7 +7,7 @@ import config from '../config/env';
 import { TokenFor } from '../types/general';
 import IRequest from '../types/general';
 import TokenService from '../services/token';
-// import EmailService from '../services/email';
+import EmailService from '../services/email';
 const verificationSecret = config.verificationSecret;
 
 const loginExpiresIn = config.loginExpiresIn;
@@ -43,10 +43,8 @@ export default class AdminController {
 		try {
 			const admin = req.user;
 			const data = req.body;
-			const password = TokenService.generateCode();
 			const newAdmin = await AdminService.create({
 				...data,
-				password,
 				createdBy: admin,
 			});
 
@@ -151,8 +149,7 @@ export default class AdminController {
 		} catch (err) {
 			next(err);
 		}
-  }
-  
+	}
 
 	static async forgotPassword(req: Request, res: Response, next: NextFunction) {
 		const { email } = req.body;
@@ -165,8 +162,7 @@ export default class AdminController {
 				});
 			}
 
-			// todo: change this to password reset mail
-			// EmailService.sendVerificationMail(user.toJSON());
+			EmailService.sendForgotPasswordMailAdmin(user.toJSON());
 
 			res.json(
 				sendResponse(httpStatus.OK, 'Password reset code sent', {}, null)
@@ -181,10 +177,16 @@ export default class AdminController {
 
 		try {
 			const userData = TokenService.verifyToken(resetToken, verificationSecret);
+			const user = await AdminService.getAdmin({ email: userData.user.email });
+			if (!user) {
+				throw new APIError({
+					message: 'User not found',
+					status: 404,
+				});
+			}
+			const { tokenFor } = userData;
 
-			const { user: userToEdit, tokenFor } = userData;
-
-			if (email !== userToEdit.email) {
+			if (email !== user.email) {
 				throw new APIError({
 					message: 'Unauthorized User',
 					status: 400,
@@ -197,11 +199,20 @@ export default class AdminController {
 					status: 400,
 				});
 			}
-			userToEdit.password = newPassword;
-			await userToEdit.save();
+			user.password = newPassword;
+			await user.save();
+
+			const convertUser = user.toJSON();
+
+			const newToken = TokenService.generateToken(
+				convertUser,
+				loginSecret,
+				loginExpiresIn,
+				TokenFor.Access
+			);
 
 			res.json(
-				sendResponse(httpStatus.OK, 'Password change successful. Please login with your new password.', {}, null)
+				sendResponse(httpStatus.OK, 'Account verified', user, null, newToken)
 			);
 		} catch (err) {
 			next(err);

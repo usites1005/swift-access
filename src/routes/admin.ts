@@ -19,34 +19,6 @@ router.get('/getAdminAccounts', AdminAccountController.getAdminAccounts);
 // GET-- all admin
 router.get('/', AuthMiddleware.adminOnlyAuth, adminController.getAdmins);
 
-// POST-- admin login
-router.post(
-	'/login',
-	[celebrate(validator.login, { abortEarly: false })],
-	adminController.login
-);
-
-router.post(
-	'/password/forgot',
-	celebrate(validator.forgotPassword, { abortEarly: true }),
-	adminController.forgotPassword
-);
-
-router.post(
-	'/password/reset',
-	celebrate(validator.resetPassword, { abortEarly: true }),
-	adminController.resetPassword
-);
-
-router.post(
-	'/password/change',
-	[
-		AuthMiddleware.superAdminAuth,
-		celebrate(validator.changePassword, { abortEarly: false }),
-	],
-	adminController.changePassword
-);
-
 // Get logged in admin
 router.get('/me', AuthMiddleware.adminOnlyAuth, adminController.getMe);
 
