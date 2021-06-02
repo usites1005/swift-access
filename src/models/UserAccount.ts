@@ -5,11 +5,9 @@ const UserAccountSchema = new Schema(
 	{
 		userId: { type: Types.ObjectId, ref: 'User', required: true },
 		amountDeposited: { type: Number, required: true, default: 0 },
-		earnedROI: { type: Number, required: true, default: 0 },
-		referralBonus: { type: Number, required: true, default: 0 },
-		leadershipBonus: { type: Number, required: true, default: 0 },
-		totalWithdrawal: { type: Number, required: true, default: 0 },
-		accountBalance: { type: Number, required: true, default: 0 },
+		destinationAddr: { type: String, required: true },
+		sender: { type: String, required: true },
+		cycleEndDate: { type: Date },
 	},
 	{ timestamps: true }
 );

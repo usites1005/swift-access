@@ -14,9 +14,11 @@ export const signup = {
 	}),
 };
 
-export const update = {
-	[Segments.BODY]: Joi.object().keys({
-		fullName: Joi.string().required(),
-		imageURL: Joi.string(),
-	}),
+export const addCoinAddress = {
+	[Segments.BODY]: Joi.object()
+		.keys({
+			ethAddr: Joi.string().allow(null, ''),
+			tronAddr: Joi.string().allow(null, ''),
+		})
+		.or('ethAddr', 'tronAddr'),
 };

@@ -22,3 +22,24 @@ export const update = {
 		imageURL: Joi.string(),
 	}),
 };
+
+export const changePassword = {
+	[Segments.BODY]: Joi.object().keys({
+		oldPassword: Joi.string().required(),
+		newPassword: Joi.string().required(),
+	}),
+};
+
+export const forgotPassword = {
+	[Segments.BODY]: Joi.object().keys({
+		email: Joi.string().required(),
+	}),
+};
+
+export const resetPassword = {
+	[Segments.BODY]: Joi.object().keys({
+		email: Joi.string().required(),
+		resetCode: Joi.string().required(),
+		newPassword: Joi.string().required(),
+	}),
+};

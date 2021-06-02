@@ -35,7 +35,7 @@ export const resendVerificationMail = {
 export const resetPassword = {
 	[Segments.BODY]: Joi.object().keys({
 		email: Joi.string().required(),
-		resetCode: Joi.string().required(),
+		resetToken: Joi.string().required(),
 		newPassword: Joi.string().required(),
 	}),
 };

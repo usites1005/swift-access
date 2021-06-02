@@ -1,7 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import httpStatus from 'http-status';
 import UserService from '../services/user';
-import AdminService from '../services/admin';
 import TokenService from '../services/token';
 import config from '../config/env';
 import sendResponse from '../common/response';
@@ -28,6 +27,13 @@ export default class AuthController {
 				throw new APIError({
 					message: 'User not found',
 					status: httpStatus.NOT_FOUND,
+				});
+			}
+			if (user.isVerified) {
+				throw new APIError({
+					message:
+						'Account has been previously verified. Please go ahead and login',
+					status: 400,
 				});
 			}
 			// send account verification to user
@@ -132,28 +138,15 @@ export default class AuthController {
 		res: Response,
 		next: NextFunction
 	) {
-		const url = req.url.split('/');
-		const userType = url[url.length - 1];
-
 		try {
 			const { oldPassword, newPassword } = req.body;
 			const email = req.user!.email;
 
-			let user;
-			if (userType === 'user') {
-				user = await UserService.changePassword(
-					email,
-					oldPassword,
-					newPassword
-				);
-			}
-			if (userType === 'admin') {
-				user = await AdminService.changePassword(
-					email,
-					oldPassword,
-					newPassword
-				);
-			}
+			const user = await UserService.changePassword(
+				email,
+				oldPassword,
+				newPassword
+			);
 
 			if (!user) {
 				throw new APIError({
@@ -181,8 +174,7 @@ export default class AuthController {
 				});
 			}
 
-			// todo: change this to password reset mail
-			EmailService.sendVerificationMail(user.toJSON());
+			EmailService.sendForgotPasswordMail(user.toJSON());
 
 			res.json(
 				sendResponse(httpStatus.OK, 'Password reset code sent', {}, null)
@@ -197,10 +189,16 @@ export default class AuthController {
 
 		try {
 			const userData = TokenService.verifyToken(resetToken, verificationSecret);
+			const user = await UserService.getUser({ email: userData.user.email });
+			if (!user) {
+				throw new APIError({
+					message: 'User not found',
+					status: 404,
+				});
+			}
+			const { tokenFor } = userData;
 
-			const { user: userToEdit, tokenFor } = userData;
-
-			if (email !== userToEdit.email) {
+			if (email !== user.email) {
 				throw new APIError({
 					message: 'Unauthorized User',
 					status: 400,
@@ -213,12 +211,23 @@ export default class AuthController {
 					status: 400,
 				});
 			}
-			userToEdit.password = newPassword;
-			await userToEdit.save();
+			user.password = newPassword;
+			await user.save();
 
-			res.json(
-				sendResponse(httpStatus.OK, 'Password change successful', {}, null)
+			const convertUser = user.toJSON();
+
+			const newToken = TokenService.generateToken(
+				convertUser,
+				loginSecret,
+				loginExpiresIn,
+				TokenFor.Access
 			);
+
+			res
+				.status(httpStatus.OK)
+				.json(
+					sendResponse(httpStatus.OK, 'Account verified', user, null, newToken)
+				);
 		} catch (err) {
 			next(err);
 		}

@@ -8,7 +8,9 @@ import {
 	resetPassword,
 	resendVerificationMail,
 } from '../validation/auth';
+import * as adminValidator from '../validation/admin';
 import AuthController from '../controllers/auth';
+import adminController from '../controllers/admin';
 import AuthMiddleware from '../middleware/auth';
 const router = express.Router();
 
@@ -19,13 +21,13 @@ router.post(
 );
 
 router.post(
-	'/login',
+	'/login/user',
 	celebrate(login, { abortEarly: false }),
 	AuthController.login
 );
 
 router.post(
-	'/password/forgot/:type',
+	'/password/forgot/user',
 	celebrate(forgotPassword, { abortEarly: true }),
 	AuthController.forgotPassword
 );
@@ -37,9 +39,28 @@ router.post(
 );
 
 router.post(
-	'/password/reset/:type',
+	'/password/reset/user',
 	celebrate(resetPassword, { abortEarly: true }),
 	AuthController.resetPassword
+);
+
+// POST-- admin login
+router.post(
+	'/login/admin',
+	[celebrate(adminValidator.login, { abortEarly: false })],
+	adminController.login
+);
+
+router.post(
+	'/password/forgot/admin',
+	celebrate(adminValidator.forgotPassword, { abortEarly: true }),
+	adminController.forgotPassword
+);
+
+router.post(
+	'/password/reset/admin',
+	celebrate(adminValidator.resetPassword, { abortEarly: true }),
+	adminController.resetPassword
 );
 
 router.post(
@@ -51,10 +72,19 @@ router.post(
 router.post(
 	'/password/change/admin',
 	[
-		AuthMiddleware.superAdminAuth,
-		celebrate(changePassword, { abortEarly: false }),
+		AuthMiddleware.adminOnlyAuth,
+		celebrate(adminValidator.changePassword, { abortEarly: false }),
 	],
-	AuthController.changePassword
+	adminController.changePassword
 );
+
+// router.post(
+//   '/password/change/admin',
+//   [
+//     AuthMiddleware.adminOnlyAuth,
+//     celebrate(changePassword, { abortEarly: false }),
+//   ],
+//   AuthController.changePassword,
+// );
 
 export default router;

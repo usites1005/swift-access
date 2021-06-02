@@ -99,7 +99,8 @@ export default class UserService {
 			},
 			{ new: true }
 		);
-		return user;
+
+    return user;
 	}
 
 	static async queryUser(query: { [key: string]: any }) {

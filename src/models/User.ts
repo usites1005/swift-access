@@ -20,7 +20,6 @@ const UserSchema = new Schema(
 			required: true,
 		},
 		password: { type: String, required: true },
-		// phone: { type: String, required: true },
 		imageURL: { type: String, default: '' },
 		refBy: { type: String },
 		isVerified: { type: Boolean, default: false },
