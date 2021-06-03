@@ -17,7 +17,7 @@ export default class EarningsController {
 		next: NextFunction
 	) {
 		try {
-      let userId = req.user!.id;
+			let userId = req.user!.id;
 
 			const earnings = await EarningsService.getUserEarnings(userId);
 			res.json(sendResponse(httpStatus.OK, 'User earnings found', earnings));
@@ -75,5 +75,23 @@ export default class EarningsController {
 				})
 			);
 		}
+	}
+
+	static async cronJobReleaseROI() {
+		// get all user accounts whose contracts have not ended and do this for each user
+		const userAccounts = await UserAccountService.filterAllUsersAccounts({
+			cycleEndDate: { $gte: dayjs() },
+		});
+		const earnings = userAccounts.map(async (account) => {
+			return await EarningsService.create({
+				userId: account.userId,
+				accountId: account.id,
+				type: EarningTypeEnum.ROI,
+				amount: account.amountDeposited * 0.01,
+				comment: '',
+			});
+		});
+
+		await Promise.all(earnings);
 	}
 }
