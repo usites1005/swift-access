@@ -47,6 +47,13 @@ export default class AuthMiddleware {
 				tokenToVerify,
 				loginSecret
 			);
+			// check if the request is coming from an admin rather than an user
+			if (!verificationResponse.user.btcAddr) {
+				throw new APIError({
+					message: 'Unauthorized user',
+					status: httpStatus.UNAUTHORIZED,
+				});
+			}
 			const id = verificationResponse.user.id;
 			const user = await UserModel.findById(id);
 			if (user) {
@@ -75,7 +82,16 @@ export default class AuthMiddleware {
 				tokenToVerify,
 				loginSecret
 			);
+
 			const id = verificationResponse.user.id;
+
+			// check if the request is coming from a user rather than an admin
+			if ('btcAddr' in verificationResponse.user) {
+				throw new APIError({
+					message: 'Unauthorized user',
+					status: httpStatus.UNAUTHORIZED,
+				});
+			}
 
 			const user = await AdminModel.findById(id);
 

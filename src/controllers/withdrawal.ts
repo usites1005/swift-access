@@ -48,7 +48,7 @@ export default class WithdrawalController {
 		next: NextFunction
 	) {
 		try {
-			const withdrawals = await WithdrawalService.getAllWithdrawals();
+			const withdrawals = await WithdrawalService.getAllWithdrawals({});
 			res.json(sendResponse(httpStatus.OK, 'Withdrawals found', withdrawals));
 		} catch (err) {
 			next(err);

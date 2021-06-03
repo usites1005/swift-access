@@ -6,6 +6,8 @@ import EarningsService from '../services/earnings';
 import UserAccountService from '../services/userAccount';
 import IRequest from '../types/general';
 import { EarningTypeEnum, IEarnings } from '../types/earnings';
+import { WithdrawalStatusEnum } from '../types/withdrawal';
+import UserService from '../services/user';
 
 class AnalyticsController {
 	static async getUserData(req: IRequest, res: Response, next: NextFunction) {
@@ -82,6 +84,89 @@ class AnalyticsController {
 				totalLBonus,
 				availableBalance,
 				earnings: userEarnings,
+			};
+
+			res.json(
+				sendResponse(httpStatus.OK, 'Success', {
+					...userData,
+				})
+			);
+		} catch (err) {
+			next(err);
+		}
+	}
+
+	static async getAnalyticsAdmin(
+		_req: IRequest,
+		res: Response,
+		next: NextFunction
+	) {
+		try {
+			type UserData = {
+				numVerifiedUsers: number;
+				totalDeposits: number;
+				totalWithdrawals: number;
+				totalEarnings: number;
+				totalROI: number;
+				totalRBonus: number;
+				totalLBonus: number;
+				earnings: IEarnings[];
+			};
+
+			// get all verified users
+			const verifiedUsers = await UserService.getUsers({ isVerified: true });
+
+			// get all user accounts and get the total deposits
+			const userAccounts = await UserAccountService.getAllUsersAccounts();
+			let totalDeposits: number = 0;
+			if (userAccounts.length >= 1) {
+				totalDeposits = userAccounts.reduce(
+					(accumulator, { amountDeposited }) => accumulator + amountDeposited,
+					0
+				);
+			}
+			// get all withdrawals and get the total withdrawals
+			const withdrawals = await WithdrawalService.getAllWithdrawals({
+				status: WithdrawalStatusEnum.PAID,
+			});
+			let totalWithdrawals: number = 0;
+			if (withdrawals.length >= 1) {
+				totalWithdrawals = withdrawals.reduce(
+					(accumulator, { dollarAmount }) => accumulator + dollarAmount,
+					0
+				);
+			}
+			// get all user earnings and get the total roi and total r-bonus and total l-bonus
+			const earnings = await EarningsService.getAllEarnings();
+
+			let totalROI: number = 0;
+			let totalRBonus: number = 0;
+			let totalLBonus: number = 0;
+			if (earnings.length >= 1) {
+				for (const earning of earnings) {
+					if (earning.type === EarningTypeEnum.ROI) {
+						totalROI += earning.amount;
+					} else if (earning.type === EarningTypeEnum.LBONUS) {
+						totalLBonus += earning.amount;
+					} else if (earning.type === EarningTypeEnum.RBONUS) {
+						totalRBonus += earning.amount;
+					}
+				}
+			}
+
+			// total earnings = total roi + total r-bonus + total l-bonus
+			const totalEarnings = totalROI + totalRBonus + totalLBonus;
+
+			// userData
+			const userData: UserData = {
+				numVerifiedUsers: (await verifiedUsers).length,
+				totalDeposits,
+				totalWithdrawals,
+				totalEarnings,
+				totalROI,
+				totalRBonus,
+				totalLBonus,
+				earnings,
 			};
 
 			res.json(

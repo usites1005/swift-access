@@ -10,6 +10,7 @@ import WithdrawalController from '../controllers/withdrawal';
 import adminController from '../controllers/admin';
 import AuthMiddleware from '../middleware/auth';
 import EarningsController from '../controllers/earnings';
+import AnalyticsController from '../controllers/analytics';
 
 const router = express.Router();
 
@@ -23,20 +24,34 @@ router.get('/', AuthMiddleware.adminOnlyAuth, adminController.getAdmins);
 router.get('/me', AuthMiddleware.adminOnlyAuth, adminController.getMe);
 
 // PUT
-router
-	.route('/:adminId')
-	.put(
-		[
-			celebrate(validator.update, { abortEarly: false }),
-			AuthMiddleware.adminOnlyAuth,
-		],
-		adminController.updateAdmin
-	);
+// router
+// 	.route('/:adminId')
+// 	.put(
+// 		[
+// 			celebrate(validator.update, { abortEarly: false }),
+// 			AuthMiddleware.adminOnlyAuth,
+// 		],
+// 		adminController.updateAdmin
+// 	);
+
+// PUT-- update user withdrawal
+router.route('/updateToPaid').put(
+	celebrate(withdrawalValidator.updateWithdrawalStatus, {
+		abortEarly: false,
+	}),
+	AuthMiddleware.adminOnlyAuth,
+	WithdrawalController.updateToPaid
+);
 
 // GET-- all users earnings
 router
 	.route('/earnings')
 	.get(AuthMiddleware.adminOnlyAuth, EarningsController.getAllEarnings);
+
+// GET-- analytics
+router
+	.route('/analytics')
+	.get(AuthMiddleware.adminOnlyAuth, AnalyticsController.getAnalyticsAdmin);
 
 // POST-- all users earnings
 router
@@ -82,18 +97,9 @@ router
 
 // GET-- all users withdrawals
 router.get(
-	'/getAllWithdrawals',
+	'/withdrawals',
 	AuthMiddleware.adminOnlyAuth,
 	WithdrawalController.getAllWithdrawals
-);
-
-// PUT-- all users withdrawals
-router.route('/updateToPaid').put(
-	celebrate(withdrawalValidator.updateWithdrawalStatus, {
-		abortEarly: false,
-	}),
-	AuthMiddleware.adminOnlyAuth,
-	WithdrawalController.updateToPaid
 );
 
 // POST-- create admin
