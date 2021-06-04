@@ -79,7 +79,7 @@ export default class EmailService {
 			user!.email,
 			{
 				name: user?.fullName,
-				resetLink: `${config.frontEndUrl}/adminAuth/reset?resetToken=${token}`,
+				resetLink: `${config.frontEndUrl}/admin-auth/reset?resetToken=${token}`,
 				message:
 					"You requested to reset your password. Please ignore if you didn't make the request.",
 			},

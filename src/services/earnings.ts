@@ -20,7 +20,7 @@ export default class EarningsService {
 
 	/* GET ALL EARNINGS (ADMIN) */
 	static async getAllEarnings() {
-		return EarningsModel.find().sort({ createdAt: -1 });
+		return EarningsModel.find().sort({ createdAt: -1 }).populate('userId', 'username email');
 	}
 
 	/* QUERY ALL EARNINGS (ADMIN) */

@@ -16,7 +16,6 @@ export default class UserService {
 		if (existingUser) {
 			throw new Error('Email or username is already in use');
 		}
-		// todo move this hash to the user model file
 		const hashAnswer = BcryptService.hashPassword(data.sAnswer);
 		data.sAnswer = hashAnswer;
 		const newUser = new UserModel(data);
@@ -89,6 +88,12 @@ export default class UserService {
 		return UserModel.find({ ...data }).sort({ createdAt: -1 });
 	}
 
+	static async getUserByWallet(address: string) {
+		return UserModel.findOne({
+			$or: [{ btcAddr: address }, { ethAddr: address }, { tronAddr: address }],
+		});
+	}
+
 	static async updateUser({ id, ...data }: Partial<IUser>) {
 		const user = await UserModel.findByIdAndUpdate(
 			id,
@@ -100,7 +105,7 @@ export default class UserService {
 			{ new: true }
 		);
 
-    return user;
+		return user;
 	}
 
 	static async queryUser(query: { [key: string]: any }) {

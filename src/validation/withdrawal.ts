@@ -11,6 +11,5 @@ export const updateWithdrawalStatus = {
 	[Segments.BODY]: Joi.object().keys({
 		userId: Joi.string().required(),
 		withdrawalId: Joi.string().required(),
-		comment: Joi.string(),
 	}),
 };

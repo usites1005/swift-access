@@ -19,7 +19,7 @@ export default class UserAccountService {
 
 	/* GET ALL ACCOUNTS (ADMIN) */
 	static async getAllUsersAccounts() {
-		return await UserAccountModel.find().sort({ createdAt: -1 });
+		return await UserAccountModel.find().sort({ createdAt: -1 }).populate('userId', 'username email');
 	}
 
 	/* QUERY ALL  ACCOUNTS (ADMIN) */

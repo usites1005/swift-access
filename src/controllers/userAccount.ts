@@ -18,23 +18,14 @@ export default class UserAccountController {
 		next: NextFunction
 	) {
 		try {
-			const data = req.body;
+			const { destinationAddr, sender } = req.body;
 			const cycleEndDate = getEndDate();
 
-			// fund referrer and leaders accounts
-			const user = await UserService.getUser({ _id: data.userId });
+			// get user by wallet address
+			const user = await UserService.getUserByWallet(sender);
 			if (!user) {
 				throw new APIError({
-					message: 'User not found',
-					status: httpStatus.NOT_FOUND,
-				});
-			}
-
-			const { btcAddr, ethAddr, tronAddr } = user;
-
-			if (![btcAddr, tronAddr, ethAddr].includes(req.body.destinationAddr)) {
-				throw new APIError({
-					message: `The destination address is not in the user's profile.`,
+					message: 'No user found with this wallet address.',
 					status: httpStatus.NOT_FOUND,
 				});
 			}
@@ -54,17 +45,17 @@ export default class UserAccountController {
 					adminAccount[0].adminBTCAddress,
 					adminAccount[0].adminETHAddress,
 					adminAccount[0].adminTronAddress,
-				].includes(data.sender)
+				].includes(destinationAddr)
 			) {
 				[0];
 				throw new APIError({
-					message: `The sender address is not in the admin's profile.`,
+					message: `The receiver address is not in the admin's profile.`,
 					status: httpStatus.NOT_FOUND,
 				});
 			}
 
 			const newAccount = await UserAccountService.create({
-				...data,
+				...req.body,
 				cycleEndDate,
 				userId: user._id,
 			});
