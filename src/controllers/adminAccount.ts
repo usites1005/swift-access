@@ -113,9 +113,14 @@ export default class AdminAccountController {
 		next: NextFunction
 	) {
 		try {
-			const account = await AdminAccountService.getAdminAccounts();
+			let accounts;
+      accounts = await AdminAccountService.getAdminAccounts();
+      // todo: find the response to send to frontend when admin has no account set
+			if (accounts.length === 0) {
+				accounts = [{}];
+			}
 			res.json(
-				sendResponse(httpStatus.OK, 'Admin address account found', account[0])
+				sendResponse(httpStatus.OK, 'Admin address account found', accounts[0])
 			);
 		} catch (err) {
 			next(err);
