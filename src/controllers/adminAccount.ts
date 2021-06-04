@@ -54,8 +54,6 @@ export default class AdminAccountController {
 	) {
 		try {
 			const { adminBTCAddress, adminETHAddress, adminTronAddress } = req.body;
-			console.log({ adminBTCAddress, adminETHAddress, adminTronAddress });
-
 			// check if the user has that coin already added
 			const adminAccounts = await AdminAccountService.getAdminAccounts();
 			if (adminAccounts.length < 1) {

@@ -16,7 +16,7 @@ import cron from 'node-cron';
 import EarningsController from './controllers/earnings';
 
 cron.schedule('0 0 0 * * 1-5', () => {
-	console.log('running a task every week day');
+	// console.log('running a task every week day');
 	EarningsController.cronJobReleaseROI();
 });
 

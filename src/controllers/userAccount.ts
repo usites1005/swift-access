@@ -22,7 +22,7 @@ export default class UserAccountController {
 			const cycleEndDate = getEndDate();
 
 			// get user by wallet address
-			const user = await UserService.getUserByWallet(destinationAddr);
+			const user = await UserService.getUserByWallet(sender);
 			if (!user) {
 				throw new APIError({
 					message: 'No user found with this wallet address.',
@@ -45,11 +45,11 @@ export default class UserAccountController {
 					adminAccount[0].adminBTCAddress,
 					adminAccount[0].adminETHAddress,
 					adminAccount[0].adminTronAddress,
-				].includes(sender)
+				].includes(destinationAddr)
 			) {
 				[0];
 				throw new APIError({
-					message: `The sender address is not in the admin's profile.`,
+					message: `The receiver address is not in the admin's profile.`,
 					status: httpStatus.NOT_FOUND,
 				});
 			}
