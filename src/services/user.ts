@@ -89,6 +89,12 @@ export default class UserService {
 		return UserModel.find({ ...data }).sort({ createdAt: -1 });
 	}
 
+	static async getUserByWallet(address: string) {
+		return UserModel.findOne({
+			$or: [{ btcAddr: address }, { ethAddr: address }, { tronAddr: address }],
+		});
+	}
+
 	static async updateUser({ id, ...data }: Partial<IUser>) {
 		const user = await UserModel.findByIdAndUpdate(
 			id,
@@ -100,7 +106,7 @@ export default class UserService {
 			{ new: true }
 		);
 
-    return user;
+		return user;
 	}
 
 	static async queryUser(query: { [key: string]: any }) {

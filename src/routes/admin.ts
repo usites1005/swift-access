@@ -77,15 +77,6 @@ router
 		UserAccountController.createUserAccount
 	);
 
-// // POST-- create admin crypto address account
-// router
-// 	.route('/createAdminAccount')
-// 	.post(
-// 		celebrate(adminAccountValidator.createAdminAccount, { abortEarly: false }),
-// 		AuthMiddleware.adminOnlyAuth,
-// 		AdminAccountController.createAdminAccount
-// 	);
-
 // add coin address of logged in user
 router
 	.route('/addCoinAddress')

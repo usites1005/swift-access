@@ -2,8 +2,8 @@ import { Joi, Segments } from 'celebrate';
 
 export const create = {
 	[Segments.BODY]: Joi.object().keys({
-		fullName: Joi.string(),
-		username: Joi.string(),
+		fullName: Joi.string().allow(null, ''),
+		username: Joi.string().allow(null, ''),
 		email: Joi.string().email().required(),
 		password: Joi.string().required(),
 	}),
@@ -19,7 +19,7 @@ export const login = {
 export const update = {
 	[Segments.BODY]: Joi.object().keys({
 		fullName: Joi.string().required(),
-		imageURL: Joi.string(),
+		imageURL: Joi.string().allow(null, ''),
 	}),
 };
 

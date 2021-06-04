@@ -52,8 +52,10 @@ export default class AdminAccountController {
 		res: Response,
 		next: NextFunction
 	) {
-		try {      
+		try {
 			const { adminBTCAddress, adminETHAddress, adminTronAddress } = req.body;
+			console.log({ adminBTCAddress, adminETHAddress, adminTronAddress });
+
 			// check if the user has that coin already added
 			const adminAccounts = await AdminAccountService.getAdminAccounts();
 			if (adminAccounts.length < 1) {
@@ -94,7 +96,13 @@ export default class AdminAccountController {
 				adminAccounts[0].save();
 			}
 
-			res.json(sendResponse(httpStatus.OK, 'Admin address account updated', adminAccounts[0]));
+			res.json(
+				sendResponse(
+					httpStatus.OK,
+					'Admin address account updated',
+					adminAccounts[0]
+				)
+			);
 		} catch (err) {
 			next(err);
 		}
@@ -105,7 +113,7 @@ export default class AdminAccountController {
 		_req: IRequest,
 		res: Response,
 		next: NextFunction
-	) {    
+	) {
 		try {
 			const account = await AdminAccountService.getAdminAccounts();
 			res.json(
