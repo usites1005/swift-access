@@ -7,26 +7,30 @@ import IRequest from '../types/general';
 
 export default class AdminAccountController {
 	// admin only
-	static async createAdminAccount(
+	static async addCoinAddress(
 		req: IRequest,
 		res: Response,
 		next: NextFunction
 	) {
 		try {
-			const data = req.body;
+			const adminId = req.user!.id;
+			const { currency, address } = req.body;
 
 			// Get admin admin account
-			const adminAccount = await AdminAccountService.getAdminAccounts();
+			const currencyAccounts = await AdminAccountService.getAdminAccounts({
+				currency,
+			});
 
-			if (adminAccount.length > 0) {
-				throw new APIError({
-					message: `Admin already has an account with crypto addresses`,
-					status: httpStatus.FORBIDDEN,
-				});
+			if (currencyAccounts.length > 0) {
+				// deactivate other accounts of the same currency
+				currencyAccounts.forEach((account) => account.isActive === false);
 			}
 
+			// create a new account
 			const newAccount = await AdminAccountService.create({
-				...data,
+				currency,
+				address,
+				adminId,
 			});
 
 			res.json(
@@ -46,67 +50,7 @@ export default class AdminAccountController {
 		}
 	}
 
-	// admin
-	static async addCoinAddress(
-		req: IRequest,
-		res: Response,
-		next: NextFunction
-	) {
-		try {
-			const { adminBTCAddress, adminETHAddress, adminTronAddress } = req.body;
-			// check if the user has that coin already added
-			const adminAccounts = await AdminAccountService.getAdminAccounts();
-			if (adminAccounts.length < 1) {
-				await AdminAccountService.create({
-					adminBTCAddress,
-					adminETHAddress,
-					adminTronAddress,
-				});
-			} else {
-				if (adminBTCAddress && adminAccounts[0].adminBTCAddress) {
-					throw new APIError({
-						message: 'You already have set a BTC address.',
-						status: httpStatus.FORBIDDEN,
-					});
-				}
-
-				if (adminETHAddress && adminAccounts[0].adminETHAddress) {
-					throw new APIError({
-						message: 'You already have set an ETH address.',
-						status: httpStatus.FORBIDDEN,
-					});
-				}
-
-				if (adminTronAddress && adminAccounts[0].adminTronAddress) {
-					throw new APIError({
-						message: 'You already have set a TRON address.',
-						status: httpStatus.FORBIDDEN,
-					});
-				}
-
-				adminAccounts[0].adminBTCAddress =
-					adminBTCAddress || adminAccounts[0].adminBTCAddress;
-				adminAccounts[0].adminETHAddress =
-					adminETHAddress || adminAccounts[0].adminETHAddress;
-				adminAccounts[0].adminTronAddress =
-					adminTronAddress || adminAccounts[0].adminTronAddress;
-
-				adminAccounts[0].save();
-			}
-
-			res.json(
-				sendResponse(
-					httpStatus.OK,
-					'Admin address account updated',
-					adminAccounts[0]
-				)
-			);
-		} catch (err) {
-			next(err);
-		}
-	}
-
-	// all users
+	// admin Only
 	static async getAdminAccounts(
 		_req: IRequest,
 		res: Response,
@@ -114,8 +58,29 @@ export default class AdminAccountController {
 	) {
 		try {
 			let accounts;
-      accounts = await AdminAccountService.getAdminAccounts();
-      // todo: find the response to send to frontend when admin has no account set
+			accounts = await AdminAccountService.getAdminAccounts({});
+			// todo: find the response to send to frontend when admin has no account set
+			if (accounts.length === 0) {
+				accounts = [{}];
+			}
+			res.json(
+				sendResponse(httpStatus.OK, 'Admin address account found', accounts[0])
+			);
+		} catch (err) {
+			next(err);
+		}
+	}
+
+	// all users
+	static async getActiveAdminAccounts(
+		_req: IRequest,
+		res: Response,
+		next: NextFunction
+	) {
+		try {
+			let accounts;
+			accounts = await AdminAccountService.getAdminAccounts({ isActive: true });
+			// todo: find the response to send to frontend when admin has no account set
 			if (accounts.length === 0) {
 				accounts = [{}];
 			}

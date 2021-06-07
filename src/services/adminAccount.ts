@@ -3,8 +3,8 @@ import { AdminAccountPure } from '../types/adminAccount';
 
 export default class UserAccountService {
 	/* GET ALL ADMIN ACCOUNTS (ADMIN) */
-	static async getAdminAccounts() {
-		return await AdminAccountModel.find().sort({ createdAt: -1 });
+	static async getAdminAccounts(data: {}) {
+		return await AdminAccountModel.find(data).sort({ createdAt: -1 });
 	}
 
 	/* CREATE ADMIN CRYPTO ACCOUNT (ADMIN) */
