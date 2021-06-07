@@ -4,6 +4,9 @@ import {
 	WithdrawalStatusEnum,
 	IWithdrawal,
 } from '../types/withdrawal';
+import dayjs from 'dayjs';
+
+dayjs().format();
 
 export default class TransactionsService {
 	/* user send withdrawal request */
@@ -18,7 +21,7 @@ export default class TransactionsService {
 	static async updateToPaid({ userId, id }: Partial<IWithdrawal>) {
 		const withdrawal = WithdrawalModel.findOneAndUpdate(
 			{ _id: id, userId },
-			{ status: WithdrawalStatusEnum.PAID },
+			{ status: WithdrawalStatusEnum.PAID, paidAt: new Date() },
 			{ new: true }
 		);
 
