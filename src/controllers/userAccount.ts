@@ -2,7 +2,7 @@ import { Response, NextFunction } from 'express';
 import httpStatus from 'http-status';
 import UserService from '../services/user';
 import UserAccountService from '../services/userAccount';
-import AdminAccountService from '../services/adminAccount';
+import DepositService from '../services/deposit';
 import sendResponse from '../common/response';
 import APIError from '../common/APIError';
 import IRequest from '../types/general';
@@ -18,42 +18,29 @@ export default class UserAccountController {
 		next: NextFunction
 	) {
 		try {
-			const { destinationAddr, sender } = req.body;
-			const cycleEndDate = getEndDate();
+			const { depositId } = req.body;
 
-			// get user by wallet address
-			const user = await UserService.getUserByWallet(sender);
+			// update the deposit request to confirmed
+			const deposit = await DepositService.confirmDeposit(depositId);
+			if (!deposit) {
+				throw new APIError({
+					message: 'Deposit request not found',
+					status: httpStatus.NOT_FOUND,
+				});
+			}
+
+			const user = await UserService.getUser({ _id: deposit.userId });
+
 			if (!user) {
 				throw new APIError({
-					message: 'No user found with this wallet address.',
+					message: 'User not found',
 					status: httpStatus.NOT_FOUND,
 				});
 			}
 
-			// Get admin admin account
-			const adminAccount = await AdminAccountService.getAdminAccounts();
-
-			if (adminAccount.length < 1) {
-				throw new APIError({
-					message: `No admin crypto account found.`,
-					status: httpStatus.NOT_FOUND,
-				});
-			}
-
-			if (
-				![
-					adminAccount[0].adminBTCAddress,
-					adminAccount[0].adminETHAddress,
-					adminAccount[0].adminTronAddress,
-				].includes(destinationAddr)
-			) {
-				[0];
-				throw new APIError({
-					message: `The receiver address is not in the admin's profile.`,
-					status: httpStatus.NOT_FOUND,
-				});
-			}
-
+      const cycleEndDate = getEndDate();
+      
+			// create new user account
 			const newAccount = await UserAccountService.create({
 				...req.body,
 				cycleEndDate,

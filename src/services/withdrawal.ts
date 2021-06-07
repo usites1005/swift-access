@@ -8,7 +8,7 @@ import dayjs from 'dayjs';
 
 dayjs().format();
 
-export default class TransactionsService {
+export default class WithdrawalsService {
 	/* user send withdrawal request */
 	static async create(data: WithdrawalPure) {
 		const newRequest = new WithdrawalModel(data);

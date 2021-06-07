@@ -1,7 +1,7 @@
 import express from 'express';
 import { celebrate } from 'celebrate';
 import * as validator from '../validation/admin';
-import * as userAccountValidator from '../validation/userAccount';
+import * as userDepositValidator from '../validation/deposit';
 import * as withdrawalValidator from '../validation/withdrawal';
 import * as adminAccountValidator from '../validation/adminAccount';
 import UserAccountController from '../controllers/userAccount';
@@ -11,6 +11,7 @@ import adminController from '../controllers/admin';
 import AuthMiddleware from '../middleware/auth';
 import EarningsController from '../controllers/earnings';
 import AnalyticsController from '../controllers/analytics';
+import DepositController from '../controllers/deposit';
 
 const router = express.Router();
 
@@ -72,9 +73,18 @@ router.get(
 router
 	.route('/createUserAccount')
 	.post(
-		celebrate(userAccountValidator.createUserAccount, { abortEarly: false }),
+		celebrate(userDepositValidator.updateDepositStatus, { abortEarly: false }),
 		AuthMiddleware.adminOnlyAuth,
 		UserAccountController.createUserAccount
+	);
+
+// POST-- unconfirmed user deposit
+router
+	.route('/rejectDeposit')
+	.post(
+		celebrate(userDepositValidator.unconfirmedDeposit, { abortEarly: false }),
+		AuthMiddleware.adminOnlyAuth,
+		DepositController.unconfirmedDeposit
 	);
 
 // add coin address of logged in user
