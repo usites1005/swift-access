@@ -16,15 +16,16 @@ export default class AdminAccountController {
 			const adminId = req.user!.id;
 			const { currency, address } = req.body;
 
-			// Get admin admin account
-			const currencyAccounts = await AdminAccountService.getAdminAccounts({
-				currency,
-			});
+      // todo: do not automatically deactivate addresses, allow admin to do it manually
+			// // Get admin admin account
+			// const currencyAccounts = await AdminAccountService.getAdminAccounts({
+			// 	currency,
+			// });
 
-			if (currencyAccounts.length > 0) {
-				// deactivate other accounts of the same currency
-				currencyAccounts.forEach((account) => account.isActive === false);
-			}
+			// if (currencyAccounts.length > 0) {
+			// 	// deactivate other accounts of the same currency
+			// 	currencyAccounts.forEach((account) => account.isActive === false);
+			// }
 
 			// create a new account
 			const newAccount = await AdminAccountService.create({
@@ -64,7 +65,7 @@ export default class AdminAccountController {
 				accounts = [{}];
 			}
 			res.json(
-				sendResponse(httpStatus.OK, 'Admin address account found', accounts[0])
+				sendResponse(httpStatus.OK, 'Admin addresses found', accounts)
 			);
 		} catch (err) {
 			next(err);
@@ -80,12 +81,11 @@ export default class AdminAccountController {
 		try {
 			let accounts;
 			accounts = await AdminAccountService.getAdminAccounts({ isActive: true });
-			// todo: find the response to send to frontend when admin has no account set
 			if (accounts.length === 0) {
 				accounts = [{}];
 			}
 			res.json(
-				sendResponse(httpStatus.OK, 'Admin address account found', accounts[0])
+				sendResponse(httpStatus.OK, 'Admin address account found', accounts)
 			);
 		} catch (err) {
 			next(err);
