@@ -65,12 +65,6 @@ UserSchema.methods = {
 		} = this.toObject() as IUser;
 		return { ...rest, id: _id };
 	},
-	// comparePassword (candidatePassword, cb) {
-	// 	bcrypt.compare(candidatePassword, this.password, function (err, isMatch) {
-	// 		if (err) return cb(err);
-	// 		cb(null, isMatch);
-	// 	});
-	// },
 };
 
 export default model<IUser>('User', UserSchema);

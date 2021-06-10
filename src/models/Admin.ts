@@ -27,7 +27,7 @@ const AdminSchema: Schema = new Schema(
  * - validations
  * - virtuals
  */
-AdminSchema.pre<IAdmin>('save', async function (next) {
+AdminSchema.pre<IAdmin>('save', function (next) {
 	var admin = this;
 
 	/**

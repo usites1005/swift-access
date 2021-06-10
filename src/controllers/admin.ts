@@ -41,11 +41,9 @@ export default class AdminController {
 
 	static async create(req: IRequest, res: Response, next: NextFunction) {
 		try {
-			const admin = req.user;
 			const data = req.body;
 			const newAdmin = await AdminService.create({
 				...data,
-				createdBy: admin,
 			});
 
 			res.json(
