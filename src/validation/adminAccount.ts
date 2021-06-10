@@ -6,3 +6,9 @@ export const addCoinAddress = {
 		address: Joi.string().required(),
 	}),
 };
+
+export const toggleAddressActive = {
+	[Segments.BODY]: Joi.object().keys({
+		addressId: Joi.string().required(),
+	}),
+};

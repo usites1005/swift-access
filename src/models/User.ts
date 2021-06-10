@@ -10,8 +10,6 @@ const UserSchema = new Schema(
 		btcAddr: { type: String, trim: true, required: true },
 		ethAddr: { type: String, trim: true },
 		tronAddr: { type: String, trim: true },
-		sQuestion: { type: String, trim: true, required: true },
-		sAnswer: { type: String, trim: true, required: true },
 		email: {
 			type: String,
 			lowercase: true,
@@ -60,8 +58,6 @@ UserSchema.pre<IUser>('save', function (next) {
 UserSchema.methods = {
 	toJSON() {
 		const {
-			sQuestion,
-			sAnswer,
 			password,
 			_id,
 			__v,

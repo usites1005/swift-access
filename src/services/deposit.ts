@@ -22,9 +22,9 @@ export default class DepositService {
 		);
 
 		return deposit;
-  }
-  
-  	/* UNCONFIRMED DEPOSIT (ADMIN) */
+	}
+
+	/* UNCONFIRMED DEPOSIT (ADMIN) */
 	static async unconfirmedDeposit(id: string) {
 		const deposit = DepositModel.findOneAndUpdate(
 			{ _id: id },
@@ -35,18 +35,18 @@ export default class DepositService {
 		return deposit;
 	}
 
+	/* GET ALL UNCONFIRMED DEPOSITS */
+	static async getUnconfirmedDeposits(userId: string) {
+		return DepositModel.find({
+			userId,
+			status: DepositStatusEnum.CONFIRMED,
+		}).sort({ createdAt: -1 });
+	}
+
 	/* GET ALL USER DEPOSITS */
 	static async getUserDeposits(userId: string) {
 		return DepositModel.find({ userId }).sort({ createdAt: -1 });
 	}
-
-	// /* GET ALL USER CONFIRMED DEPOSITS */
-	// static async getUserPaidDeposits(userId: string) {
-	// 	return DepositModel.find({
-	// 		userId,
-	// 		status: DepositStatusEnum.CONFIRMED,
-	// 	}).sort({ createdAt: -1 });
-	// }
 
 	/* GET DEPOSIT BY ID */
 	static async getDepositById(id: string) {

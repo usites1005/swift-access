@@ -86,6 +86,11 @@ router
 	.route('/getUserWithdrawals')
 	.get(AuthMiddleware.userAuth, WithdrawalController.getUserWithdrawals);
 
+// GET-- all users deposits
+router
+	.route('/getUserDeposits')
+	.get(AuthMiddleware.userAuth, DepositController.getUserDeposits);
+
 // get user by id
 router
 	.route('/:userId')

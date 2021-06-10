@@ -16,8 +16,6 @@ export default class UserService {
 		if (existingUser) {
 			throw new Error('Email or username is already in use');
 		}
-		const hashAnswer = BcryptService.hashPassword(data.sAnswer);
-		data.sAnswer = hashAnswer;
 		const newUser = new UserModel(data);
 
 		await newUser.save();

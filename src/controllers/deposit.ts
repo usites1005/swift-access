@@ -2,6 +2,7 @@ import { Response, NextFunction } from 'express';
 import httpStatus from 'http-status';
 import APIError from '../common/APIError';
 import DepositService from '../services/deposit';
+import { DepositStatusEnum } from '../types/deposit';
 import AdminAccountService from '../services/adminAccount';
 import sendResponse from '../common/response';
 import IRequest from '../types/general';
@@ -59,7 +60,27 @@ export default class DepositController {
 	}
 
 	// admin
-	static async unconfirmedDeposit(req: IRequest, res: Response, next: NextFunction) {
+	static async getAllUnconfirmedDeposits(
+		_req: IRequest,
+		res: Response,
+		next: NextFunction
+	) {
+		try {
+			const deposits = await DepositService.getAllDeposits({
+				status: DepositStatusEnum.UNCONFIRMED,
+			});
+			res.json(sendResponse(httpStatus.OK, 'Deposits found', deposits));
+		} catch (err) {
+			next(err);
+		}
+	}
+
+	// admin
+	static async unconfirmedDeposit(
+		req: IRequest,
+		res: Response,
+		next: NextFunction
+	) {
 		try {
 			const { depositId } = req.body;
 			const deposit = await DepositService.unconfirmedDeposit(depositId);

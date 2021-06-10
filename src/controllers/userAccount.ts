@@ -38,13 +38,15 @@ export default class UserAccountController {
 				});
 			}
 
-      const cycleEndDate = getEndDate();
-      
+			const cycleEndDate = getEndDate();
+
 			// create new user account
 			const newAccount = await UserAccountService.create({
-				...req.body,
+				userId: deposit.userId,
+				destinationAddr: deposit.destinationAddr,
+				sender: deposit.sender,
+				amountDeposited: deposit.amountDeposited,
 				cycleEndDate,
-				userId: user._id,
 			});
 
 			// fund referrer and leaders accounts

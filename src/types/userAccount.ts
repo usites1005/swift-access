@@ -6,7 +6,7 @@ export interface IUserAccount extends Document {
 	amountDeposited: number;
 	destinationAddr: string;
 	sender: string;
-	cycleEndDate: string;
+	cycleEndDate: Date;
 	createdAt: string;
 	updatedAt: string;
 }
@@ -16,4 +16,5 @@ export interface UserAccountPure {
 	amountDeposited: number;
 	destinationAddr: string;
 	sender: string;
+	cycleEndDate: Date;
 }

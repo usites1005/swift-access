@@ -21,7 +21,7 @@ cron.schedule('0 0 0 * * 1-5', () => {
 });
 
 const MONGODB = config.MONGODB;
-const PORT = config.port;
+const PORT = config.port || 5001;
 const SERVER_URL = config.serverUrl;
 
 const app: Application = express();

@@ -16,17 +16,6 @@ export default class AdminAccountController {
 			const adminId = req.user!.id;
 			const { currency, address } = req.body;
 
-      // todo: do not automatically deactivate addresses, allow admin to do it manually
-			// // Get admin admin account
-			// const currencyAccounts = await AdminAccountService.getAdminAccounts({
-			// 	currency,
-			// });
-
-			// if (currencyAccounts.length > 0) {
-			// 	// deactivate other accounts of the same currency
-			// 	currencyAccounts.forEach((account) => account.isActive === false);
-			// }
-
 			// create a new account
 			const newAccount = await AdminAccountService.create({
 				currency,
@@ -51,6 +40,45 @@ export default class AdminAccountController {
 		}
 	}
 
+	// admin only
+	static async toggleAddressActive(
+		req: IRequest,
+		res: Response,
+		next: NextFunction
+	) {
+		try {
+			const { addressId } = req.body;
+
+			// Get admin account
+			const address = await AdminAccountService.getAdminAccountById(addressId);
+			if (!address) {
+				throw new APIError({
+					message: 'Wallet address not found',
+					status: httpStatus.NOT_FOUND,
+				});
+			}
+
+			if (address.isActive) {
+				address.isActive = false;
+			} else {
+				address.isActive = true;
+			}
+
+			address.save();
+
+			res.json(
+				sendResponse(httpStatus.OK, 'Wallet address updated successfully', {})
+			);
+		} catch (err) {
+			next(
+				new APIError({
+					message: err.message,
+					status: 400,
+				})
+			);
+		}
+	}
+
 	// admin Only
 	static async getAdminAccounts(
 		_req: IRequest,
@@ -64,9 +92,7 @@ export default class AdminAccountController {
 			if (accounts.length === 0) {
 				accounts = [{}];
 			}
-			res.json(
-				sendResponse(httpStatus.OK, 'Admin addresses found', accounts)
-			);
+			res.json(sendResponse(httpStatus.OK, 'Admin addresses found', accounts));
 		} catch (err) {
 			next(err);
 		}

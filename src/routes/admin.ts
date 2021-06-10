@@ -19,7 +19,10 @@ const router = express.Router();
 router.get('/getAdminAccounts', AdminAccountController.getAdminAccounts);
 
 // GET-- all active admin address account
-router.get('/getActiveAdminAccounts', AdminAccountController.getActiveAdminAccounts);
+router.get(
+	'/getActiveAdminAccounts',
+	AdminAccountController.getActiveAdminAccounts
+);
 
 // GET-- all admin
 router.get('/', AuthMiddleware.adminOnlyAuth, adminController.getAdmins);
@@ -97,6 +100,20 @@ router.get(
 	WithdrawalController.getAllWithdrawals
 );
 
+// GET-- all users deposits
+router.get(
+	'/deposits',
+	AuthMiddleware.adminOnlyAuth,
+	DepositController.getAllDeposits
+);
+
+// GET-- all users unconfirmed deposits
+router.get(
+	'/unconfirmedDeposits',
+	AuthMiddleware.adminOnlyAuth,
+	DepositController.getAllUnconfirmedDeposits
+);
+
 // add coin address of admin
 router
 	.route('/addCoinAddress')
@@ -104,6 +121,15 @@ router
 		celebrate(adminAccountValidator.addCoinAddress, { abortEarly: false }),
 		AuthMiddleware.superAdminAuth,
 		AdminAccountController.addCoinAddress
+	);
+
+// toggleAddressActive
+router
+	.route('/toggleAddressActive')
+	.put(
+		celebrate(adminAccountValidator.toggleAddressActive, { abortEarly: false }),
+		AuthMiddleware.superAdminAuth,
+		AdminAccountController.toggleAddressActive
 	);
 
 // POST-- create admin
