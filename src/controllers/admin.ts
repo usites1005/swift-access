@@ -216,4 +216,43 @@ export default class AdminController {
 			next(err);
 		}
 	}
+
+	// admin only
+	static async toggleAdminActive(
+		req: IRequest,
+		res: Response,
+		next: NextFunction
+	) {
+		try {
+			const { adminId } = req.body;
+
+			// Get admin account
+			const admin = await AdminService.getAdmin({ _id: adminId });
+			if (!admin) {
+				throw new APIError({
+					message: 'Admin not found',
+					status: httpStatus.NOT_FOUND,
+				});
+			}
+
+			if (admin.isActive) {
+				admin.isActive = false;
+			} else {
+				admin.isActive = true;
+			}
+
+			admin.save();
+
+			res.json(
+				sendResponse(httpStatus.OK, 'Admin account updated successfully', {})
+			);
+		} catch (err) {
+			next(
+				new APIError({
+					message: err.message,
+					status: 400,
+				})
+			);
+		}
+	}
 }

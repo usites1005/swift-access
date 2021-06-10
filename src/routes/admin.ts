@@ -12,6 +12,7 @@ import AuthMiddleware from '../middleware/auth';
 import EarningsController from '../controllers/earnings';
 import AnalyticsController from '../controllers/analytics';
 import DepositController from '../controllers/deposit';
+import AdminController from '../controllers/admin';
 
 const router = express.Router();
 
@@ -29,17 +30,6 @@ router.get('/', AuthMiddleware.adminOnlyAuth, adminController.getAdmins);
 
 // Get logged in admin
 router.get('/me', AuthMiddleware.adminOnlyAuth, adminController.getMe);
-
-// PUT
-// router
-// 	.route('/:adminId')
-// 	.put(
-// 		[
-// 			celebrate(validator.update, { abortEarly: false }),
-// 			AuthMiddleware.adminOnlyAuth,
-// 		],
-// 		adminController.updateAdmin
-// 	);
 
 // PUT-- update user withdrawal
 router.route('/updateToPaid').put(
@@ -130,6 +120,15 @@ router
 		celebrate(adminAccountValidator.toggleAddressActive, { abortEarly: false }),
 		AuthMiddleware.superAdminAuth,
 		AdminAccountController.toggleAddressActive
+	);
+
+// toggleAdminActive
+router
+	.route('/toggleAdminActive')
+	.put(
+		celebrate(validator.toggleAdminActive, { abortEarly: false }),
+		AuthMiddleware.superAdminAuth,
+		AdminController.toggleAdminActive
 	);
 
 // POST-- create admin

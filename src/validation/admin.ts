@@ -43,3 +43,9 @@ export const resetPassword = {
 		newPassword: Joi.string().required(),
 	}),
 };
+
+export const toggleAdminActive = {
+	[Segments.BODY]: Joi.object().keys({
+		adminId: Joi.string().required(),
+	}),
+};
