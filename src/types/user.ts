@@ -8,8 +8,6 @@ export interface IUser extends Document {
 	btcAddr: string;
 	ethAddr: string;
 	tronAddr: string;
-	sQuestion: string;
-	sAnswer: string;
 	email: string;
 	// phone: string;
 	password: string;
@@ -33,8 +31,6 @@ export interface UserPure {
 	btcAddr: string;
 	ethAddr: string;
 	tronAddr: string;
-	sQuestion: string;
-	sAnswer: string;
 	email: string;
 	password: string;
 	imageURL: string;

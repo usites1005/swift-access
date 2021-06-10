@@ -9,6 +9,7 @@ export interface IAdmin extends Document {
 	password: string;
 	imageURL: string;
 	isSuper: boolean;
+	isActive: boolean;
 	createdAt: string;
 	updatedAt: string;
 }

@@ -7,7 +7,7 @@ export interface IWithdrawal extends Document {
 	destinationAddr: string;
 	comment: string;
 	status: string;
-	paidAt: string;
+	paidAt: Date;
 	createdAt: string;
 	updatedAt: string;
 }

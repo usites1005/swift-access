@@ -95,7 +95,7 @@ export default class AuthMiddleware {
 
 			const user = await AdminModel.findById(id);
 
-			if (user) {
+			if (user && user.isActive) {
 				req.user = user as TAllUsers;
 			} else {
 				throw new APIError({

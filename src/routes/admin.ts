@@ -1,7 +1,7 @@
 import express from 'express';
 import { celebrate } from 'celebrate';
 import * as validator from '../validation/admin';
-import * as userAccountValidator from '../validation/userAccount';
+import * as userDepositValidator from '../validation/deposit';
 import * as withdrawalValidator from '../validation/withdrawal';
 import * as adminAccountValidator from '../validation/adminAccount';
 import UserAccountController from '../controllers/userAccount';
@@ -11,28 +11,25 @@ import adminController from '../controllers/admin';
 import AuthMiddleware from '../middleware/auth';
 import EarningsController from '../controllers/earnings';
 import AnalyticsController from '../controllers/analytics';
+import DepositController from '../controllers/deposit';
+import AdminController from '../controllers/admin';
 
 const router = express.Router();
 
 // GET-- all admin address account
 router.get('/getAdminAccounts', AdminAccountController.getAdminAccounts);
 
+// GET-- all active admin address account
+router.get(
+	'/getActiveAdminAccounts',
+	AdminAccountController.getActiveAdminAccounts
+);
+
 // GET-- all admin
 router.get('/', AuthMiddleware.adminOnlyAuth, adminController.getAdmins);
 
 // Get logged in admin
 router.get('/me', AuthMiddleware.adminOnlyAuth, adminController.getMe);
-
-// PUT
-// router
-// 	.route('/:adminId')
-// 	.put(
-// 		[
-// 			celebrate(validator.update, { abortEarly: false }),
-// 			AuthMiddleware.adminOnlyAuth,
-// 		],
-// 		adminController.updateAdmin
-// 	);
 
 // PUT-- update user withdrawal
 router.route('/updateToPaid').put(
@@ -72,18 +69,18 @@ router.get(
 router
 	.route('/createUserAccount')
 	.post(
-		celebrate(userAccountValidator.createUserAccount, { abortEarly: false }),
+		celebrate(userDepositValidator.updateDepositStatus, { abortEarly: false }),
 		AuthMiddleware.adminOnlyAuth,
 		UserAccountController.createUserAccount
 	);
 
-// add coin address of logged in user
+// POST-- unconfirmed user deposit
 router
-	.route('/addCoinAddress')
+	.route('/rejectDeposit')
 	.post(
-		celebrate(adminAccountValidator.addCoinAddress, { abortEarly: false }),
+		celebrate(userDepositValidator.unconfirmedDeposit, { abortEarly: false }),
 		AuthMiddleware.adminOnlyAuth,
-		AdminAccountController.addCoinAddress
+		DepositController.unconfirmedDeposit
 	);
 
 // GET-- all users withdrawals
@@ -92,6 +89,47 @@ router.get(
 	AuthMiddleware.adminOnlyAuth,
 	WithdrawalController.getAllWithdrawals
 );
+
+// GET-- all users deposits
+router.get(
+	'/deposits',
+	AuthMiddleware.adminOnlyAuth,
+	DepositController.getAllDeposits
+);
+
+// GET-- all users unconfirmed deposits
+router.get(
+	'/unconfirmedDeposits',
+	AuthMiddleware.adminOnlyAuth,
+	DepositController.getAllUnconfirmedDeposits
+);
+
+// add coin address of admin
+router
+	.route('/addCoinAddress')
+	.post(
+		celebrate(adminAccountValidator.addCoinAddress, { abortEarly: false }),
+		AuthMiddleware.superAdminAuth,
+		AdminAccountController.addCoinAddress
+	);
+
+// toggleAddressActive
+router
+	.route('/toggleAddressActive')
+	.put(
+		celebrate(adminAccountValidator.toggleAddressActive, { abortEarly: false }),
+		AuthMiddleware.superAdminAuth,
+		AdminAccountController.toggleAddressActive
+	);
+
+// toggleAdminActive
+router
+	.route('/toggleAdminActive')
+	.put(
+		celebrate(validator.toggleAdminActive, { abortEarly: false }),
+		AuthMiddleware.superAdminAuth,
+		AdminController.toggleAdminActive
+	);
 
 // POST-- create admin
 router.post(

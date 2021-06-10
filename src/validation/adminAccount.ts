@@ -1,19 +1,14 @@
 import { Joi, Segments } from 'celebrate';
 
-export const createAdminAccount = {
+export const addCoinAddress = {
 	[Segments.BODY]: Joi.object().keys({
-		adminBTCAddress: Joi.string().required(),
-		adminETHAddress: Joi.string().required(),
-		adminTronAddress: Joi.string().required(),
+		currency: Joi.string().required(),
+		address: Joi.string().required(),
 	}),
 };
 
-export const addCoinAddress = {
-	[Segments.BODY]: Joi.object()
-		.keys({
-			adminETHAddress: Joi.string().allow(null, ''),
-			adminTronAddress: Joi.string().allow(null, ''),
-			adminBTCAddress: Joi.string().allow(null, ''),
-		})
-		.or('adminETHAddress', 'adminTronAddress', 'adminBTCAddress'),
+export const toggleAddressActive = {
+	[Segments.BODY]: Joi.object().keys({
+		addressId: Joi.string().required(),
+	}),
 };

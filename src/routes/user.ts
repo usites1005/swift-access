@@ -2,12 +2,14 @@ import express from 'express';
 import { celebrate } from 'celebrate';
 import * as validator from '../validation/user';
 import * as withdrawalValidator from '../validation/withdrawal';
+import * as depositValidator from '../validation/deposit';
 import userController from '../controllers/user';
 import WithdrawalController from '../controllers/withdrawal';
 import AnalyticsController from '../controllers/analytics';
 import AuthMiddleware from '../middleware/auth';
 import EarningsController from '../controllers/earnings';
 import UserAccountController from '../controllers/userAccount';
+import DepositController from '../controllers/deposit';
 
 const router = express.Router();
 
@@ -63,10 +65,31 @@ router
 		WithdrawalController.makeWithdrawal
 	);
 
+// POST-- make a user withdrawal
+router
+	.route('/makeDeposit')
+	.post(
+		celebrate(depositValidator.depositRequest, { abortEarly: false }),
+		AuthMiddleware.userAuth,
+		DepositController.makeDeposit
+	);
+
+// router.post(
+// 	'/makeDeposit',
+// 	celebrate(depositValidator.depositRequest, { abortEarly: false }),
+// 	AuthMiddleware.userAuth,
+//   DepositController.makeDeposit
+//   );
+
 // GET-- all users withdrawals
 router
 	.route('/getUserWithdrawals')
 	.get(AuthMiddleware.userAuth, WithdrawalController.getUserWithdrawals);
+
+// GET-- all users deposits
+router
+	.route('/getUserDeposits')
+	.get(AuthMiddleware.userAuth, DepositController.getUserDeposits);
 
 // get user by id
 router

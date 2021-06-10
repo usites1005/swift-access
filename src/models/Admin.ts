@@ -16,6 +16,7 @@ const AdminSchema: Schema = new Schema(
 		password: { type: String, required: true },
 		imageURL: { type: String, default: '' },
 		isSuper: { type: Boolean, default: false },
+		isActive: { type: Boolean, default: true },
 	},
 	{ timestamps: true }
 );
@@ -26,7 +27,7 @@ const AdminSchema: Schema = new Schema(
  * - validations
  * - virtuals
  */
-AdminSchema.pre<IAdmin>('save', async function (next) {
+AdminSchema.pre<IAdmin>('save', function (next) {
 	var admin = this;
 
 	/**

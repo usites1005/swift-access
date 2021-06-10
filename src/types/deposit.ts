@@ -1,20 +1,26 @@
 import { Document } from 'mongoose';
 
-export interface IUserAccount extends Document {
+export interface IDeposit extends Document {
 	id: string;
 	userId: string;
 	amountDeposited: number;
 	destinationAddr: string;
 	sender: string;
-	cycleEndDate: Date;
+	status: string;
+	confirmedAt: Date;
 	createdAt: string;
 	updatedAt: string;
 }
 
-export interface UserAccountPure {
+export interface DepositPure {
 	userId: string;
 	amountDeposited: number;
 	destinationAddr: string;
 	sender: string;
-	cycleEndDate: Date;
+}
+
+export enum DepositStatusEnum {
+	PENDING = 'Pending',
+	CONFIRMED = 'Confirmed',
+	UNCONFIRMED = 'Unconfirmed',
 }

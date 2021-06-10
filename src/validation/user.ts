@@ -5,8 +5,6 @@ export const signup = {
 		fullName: Joi.string().required(),
 		username: Joi.string().required(),
 		btcAddr: Joi.string().required(),
-		sQuestion: Joi.string().required(),
-		sAnswer: Joi.string().required(),
 		email: Joi.string().email().required(),
 		password: Joi.string().required(),
 		refBy: Joi.string().allow(null, ''),
