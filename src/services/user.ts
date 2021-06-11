@@ -26,7 +26,6 @@ export default class UserService {
 	static async login(email: string, password: string) {
 		const user = await UserModel.findOne({
 			email,
-			isVerified: true,
 		});
 
 		if (!user) {
