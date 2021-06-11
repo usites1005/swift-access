@@ -225,6 +225,14 @@ export default class AdminController {
 	) {
 		try {
 			const { adminId } = req.body;
+			const requestSender = req.user!;
+
+			if (requestSender.id === adminId) {
+				throw new APIError({
+					message: 'You cannot deactivate yourself',
+					status: httpStatus.FORBIDDEN,
+				});
+			}
 
 			// Get admin account
 			const admin = await AdminService.getAdmin({ _id: adminId });
